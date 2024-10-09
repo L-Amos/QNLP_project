@@ -30,5 +30,3 @@ circuit = ansatz(remove_cups(diagram))
 qc = tk_to_qiskit(circuit.to_tk())
 qc.draw(output='mpl')
 plt.show()
-
-
