@@ -25,11 +25,11 @@ def sentence_to_state(sentence1, sentence2, model):
     # Convert to PQCs
     sentence1_circuit = ansatz(sentence1_diagram)
     sentence2_circuit = ansatz(sentence2_diagram)
-    sentence1_state, sentence2_state = model([sentence1_circuit, sentence2_circuit])  # Interrogate model
+    sentence1_state, sentence2_state = np.sqrt(model([sentence1_circuit, sentence2_circuit]))  # Interrogate model
     # Normalize
-    sentence1_norm = sentence1_state/np.linalg.norm(sentence1_state)
-    sentence2_norm = sentence2_state/np.linalg.norm(sentence2_state)
-    return(sentence1_norm, sentence2_norm)
+    # sentence1_norm = sentence1_state/np.linalg.norm(sentence1_state)
+    # sentence2_norm = sentence2_state/np.linalg.norm(sentence2_state)
+    return(sentence1_state, sentence2_state)
 
 def fidelity_test(state1, state2):
     qc = QuantumCircuit(3, 1)
@@ -51,7 +51,7 @@ def fidelity_test(state1, state2):
 
 def main():
     model = load_model(r"C:\Users\Luke\OneDrive\Documents\Uni Stuff\Master's\NLP Project\QNLP_project\testing\model.lt")
-    state1, state2 = sentence_to_state("woman prepares sauce .", "woman prepares tasty sauce .", model)
+    state1, state2 = sentence_to_state("woman prepares sauce .", "man prepares useful program .", model)
     fidelity = fidelity_test(state1, state2)
     print(fidelity)
     
