@@ -1,11 +1,17 @@
+#%%matplotlib qt5
 ### IMPORTS
 from lambeq import BobcatParser, RemoveCupsRewriter, AtomicType, IQPAnsatz, TketModel
 import numpy as np
-from pytket.extensions.qiskit import AerBackend
+from pytket.extensions.qiskit import AerBackend, tk_to_qiskit
 from qiskit import QuantumCircuit
 from qiskit_aer import AerSimulator
+from lambeq.backend.quantum import Diagram as Circuit, Id, Measure
+from pytket import Circuit
+import matplotlib.pyplot as plt
+
 
 # LOAD MODEL
+
 def load_model(filename):
     backend = AerBackend()
     backend_config = {
@@ -15,7 +21,7 @@ def load_model(filename):
     }
     return TketModel.from_checkpoint(filename, backend_config=backend_config)
 
-def sentence_to_state(sentence1, sentence2, model):
+def sentence_to_circuit(sentence1, sentence2, model):
     parser = BobcatParser()
     remove_cups = RemoveCupsRewriter()
     ansatz = IQPAnsatz({AtomicType.NOUN: 1, AtomicType.SENTENCE: 1}, n_layers=1, n_single_qubit_params=3)
@@ -25,11 +31,9 @@ def sentence_to_state(sentence1, sentence2, model):
     # Convert to PQCs
     sentence1_circuit = ansatz(sentence1_diagram)
     sentence2_circuit = ansatz(sentence2_diagram)
-    sentence1_state, sentence2_state = model([sentence1_circuit, sentence2_circuit])  # Interrogate model
-    # Normalize
-    sentence1_norm = sentence1_state/np.linalg.norm(sentence1_state)
-    sentence2_norm = sentence2_state/np.linalg.norm(sentence2_state)
-    return(sentence1_norm, sentence2_norm)
+    quantum_circuits = model._fast_subs([sentence1_circuit, sentence2_circuit], model.weights)
+    sentence1_qiskit, sentence2_qiskit = [tk_to_qiskit(circuit.to_tk()) for circuit in quantum_circuits]
+    return sentence1_qiskit, sentence2_qiskit
 
 def fidelity_test(state1, state2):
     qc = QuantumCircuit(3, 1)
@@ -51,8 +55,11 @@ def fidelity_test(state1, state2):
 
 def main():
     model = load_model(r"C:\Users\Luke\OneDrive\Documents\Uni Stuff\Master's\NLP Project\QNLP_project\testing\model.lt")
-    state1, state2 = sentence_to_state("woman prepares sauce .", "woman prepares tasty sauce .", model)
-    fidelity = fidelity_test(state1, state2)
-    print(fidelity)
+    sentence1_circuit, sentence2_circuit = sentence_to_circuit("woman prepares sauce .", "woman prepares tasty sauce .", model)
+    sentence1_circuit.draw('mpl')
+    sentence2_circuit.draw('mpl')
+    plt.show()
+    # fidelity = fidelity_test(state1, state2)
+    # print(fidelity)
     
 main()
