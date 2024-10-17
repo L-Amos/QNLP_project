@@ -36,14 +36,14 @@ def sentence_to_circuit(sentence1, sentence2, model):
     # sentence2_qiskit.remove_final_measurements()
     return sentence1_qiskit, sentence2_qiskit
 
-def fidelity_test(sentence1_circuit, sentence2_circuit):
+def fidelity_test(sentence1_circuit, sentence2_circuit, draw=False):
     sentence1_reg = QuantumRegister(sentence1_circuit.num_qubits, "Sentence 1")
     sentence_1_meas_reg = ClassicalRegister(sentence1_circuit.num_clbits, "Sentence 1 Meas")
     sentence2_reg = QuantumRegister(sentence2_circuit.num_qubits, "Sentence 2")
     sentence_2_meas_reg = ClassicalRegister(sentence2_circuit.num_clbits, "Sentence 2 Meas")
     control_reg = QuantumRegister(1, "control")
     fidelity_meas_reg = ClassicalRegister(1, "Fidelity meas")
-    qc = QuantumCircuit(sentence1_reg, sentence_1_meas_reg, sentence2_reg, sentence_2_meas_reg, control_reg, fidelity_meas_reg)
+    qc = QuantumCircuit(control_reg, sentence1_reg, sentence_1_meas_reg, sentence2_reg, sentence_2_meas_reg, fidelity_meas_reg)
     qc = qc.compose(sentence1_circuit, sentence1_reg, sentence_1_meas_reg)
     qc = qc.compose(sentence2_circuit, sentence2_reg, sentence_2_meas_reg)
     qc.barrier()
@@ -51,9 +51,12 @@ def fidelity_test(sentence1_circuit, sentence2_circuit):
     qc.cswap(control_reg, sentence1_reg[1], sentence2_reg[1])
     qc.h(control_reg)
     qc.measure(control_reg, fidelity_meas_reg)
+    if draw:
+        qc.draw('mpl')
+        plt.show()
     sim = AerSimulator()
     transpiled_circ = transpile(qc, sim)
-    job = sim.run(transpiled_circ, shots=10000)
+    job = sim.run(transpiled_circ, shots=2**13)
     results = job.result()
     # Post-selection
     counts = results.get_counts()
@@ -62,12 +65,12 @@ def fidelity_test(sentence1_circuit, sentence2_circuit):
         fidelity = 1
     else:
         fidelity = usable_counts['0']/sum(usable_counts.values()) - usable_counts['1']/sum(usable_counts.values())
-    return fidelity
+    return fidelity, sum(usable_counts.values())
 
 def main():
     model = load_model(r"C:\Users\Luke\OneDrive\Documents\Uni Stuff\Master's\NLP Project\QNLP_project\testing\model.lt")
-    sentence1_circuit, sentence2_circuit = sentence_to_circuit("woman prepares sauce .", "man prepares program .", model)
-    fidelity = fidelity_test(sentence1_circuit, sentence2_circuit)
-    print(fidelity)
+    sentence1_circuit, sentence2_circuit = sentence_to_circuit("woman prepares sauce .", "woman prepares tasty sauce .", model)
+    fidelity, num_successes = fidelity_test(sentence1_circuit, sentence2_circuit, draw=True)
+    print(f"Fidelity: {fidelity}\nSuccessful Runs: {num_successes}")
     
 main()
