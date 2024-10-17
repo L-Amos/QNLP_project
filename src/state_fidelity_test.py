@@ -56,7 +56,7 @@ def fidelity_test(sentence1_circuit, sentence2_circuit, draw=False):
         plt.show()
     sim = AerSimulator()
     transpiled_circ = transpile(qc, sim)
-    job = sim.run(transpiled_circ, shots=2**13)
+    job = sim.run(transpiled_circ, shots=2**16)
     results = job.result()
     # Post-selection
     counts = results.get_counts()
@@ -70,7 +70,7 @@ def fidelity_test(sentence1_circuit, sentence2_circuit, draw=False):
 def main():
     model = load_model(r"C:\Users\Luke\OneDrive\Documents\Uni Stuff\Master's\NLP Project\QNLP_project\testing\model.lt")
     sentence1_circuit, sentence2_circuit = sentence_to_circuit("woman prepares sauce .", "woman prepares tasty sauce .", model)
-    fidelity, num_successes = fidelity_test(sentence1_circuit, sentence2_circuit, draw=True)
+    fidelity, num_successes = fidelity_test(sentence1_circuit, sentence2_circuit)
     print(f"Fidelity: {fidelity}\nSuccessful Runs: {num_successes}")
     
 main()
