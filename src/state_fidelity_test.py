@@ -1,6 +1,4 @@
 ### IMPORTS
-import warnings
-import os
 from lambeq import BobcatParser, RemoveCupsRewriter, AtomicType, IQPAnsatz, TketModel
 import numpy as np
 from pytket.extensions.qiskit import AerBackend
@@ -33,7 +31,7 @@ def sentence_to_state(sentence1, sentence2, model):
     return(sentence1_norm, sentence2_norm)
 
 def main():
-    model = load_model(r"C:\Users\Luke\OneDrive\Documents\Uni Stuff\Master's\NLP Project\QNLP_project\src\model.lt")
+    model = load_model(r"C:\Users\Luke\OneDrive\Documents\Uni Stuff\Master's\NLP Project\QNLP_project\testing\model.lt")
     state1, state2 = sentence_to_state("woman prepares sauce .", "woman prepares tasty sauce .", model)
 
 main()
