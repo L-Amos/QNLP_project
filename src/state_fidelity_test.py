@@ -3,6 +3,7 @@ from lambeq import BobcatParser, RemoveCupsRewriter, AtomicType, IQPAnsatz, Tket
 import numpy as np
 from pytket.extensions.qiskit import AerBackend
 from qiskit import QuantumCircuit
+from qiskit_aer import AerSimulator
 
 # LOAD MODEL
 def load_model(filename):
@@ -30,8 +31,28 @@ def sentence_to_state(sentence1, sentence2, model):
     sentence2_norm = sentence2_state/np.linalg.norm(sentence2_state)
     return(sentence1_norm, sentence2_norm)
 
+def fidelity_test(state1, state2):
+    qc = QuantumCircuit(3, 1)
+    qc.initialize(state1, 1)
+    qc.initialize(state2, 2)
+    qc.h(0)
+    qc.cswap(0, 1, 2)
+    qc.h(0)
+    qc.measure(0, 0)
+    sim = AerSimulator()
+    job = sim.run(qc, shots=1024)
+    results = job.result()
+    counts = results.get_counts()
+    if '0' and '1' in counts.keys():
+        fidelity = counts['0']/1024 - counts['1']/1024
+    else:
+        fidelity = 1
+    return fidelity
+
 def main():
     model = load_model(r"C:\Users\Luke\OneDrive\Documents\Uni Stuff\Master's\NLP Project\QNLP_project\testing\model.lt")
     state1, state2 = sentence_to_state("woman prepares sauce .", "woman prepares tasty sauce .", model)
-
+    fidelity = fidelity_test(state1, state2)
+    print(fidelity)
+    
 main()
