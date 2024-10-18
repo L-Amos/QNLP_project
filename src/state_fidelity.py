@@ -49,7 +49,6 @@ def fidelity_test(sentence1_circuit, sentence2_circuit, draw=False):
     qc.barrier()
     # Get sentence qubits
     sentence_qubits = [qc.find_bit(qubit).index for qubit in qc.qubits]
-    print(sentence_qubits)
     for gate in qc.data:
         if gate.name == 'measure':
             sentence_qubits.remove(qc.find_bit(gate.qubits[0]).index)
@@ -74,7 +73,7 @@ def fidelity_test(sentence1_circuit, sentence2_circuit, draw=False):
 def main():
     model = load_model(r"C:\Users\Luke\OneDrive\Documents\Uni Stuff\Master's\NLP Project\QNLP_project\testing\model.lt")
     sentence1_circuit, sentence2_circuit = sentence_to_circuit("woman prepares sauce .", "skillful person runs software .", model)
-    fidelity, num_successes = fidelity_test(sentence1_circuit, sentence2_circuit, draw=True)
+    fidelity, num_successes = fidelity_test(sentence1_circuit, sentence2_circuit)
     print(f"Fidelity: {fidelity}\nSuccessful Runs: {num_successes}")
 
 main()
