@@ -61,16 +61,13 @@ def fidelity_test(sentence1_circuit, sentence2_circuit, draw=False):
     # Post-selection
     counts = results.get_counts()
     usable_counts = {result[0]: counts[result] for result in counts if '1' not in result[1:]}
-    if '1' not in usable_counts.keys():
-        fidelity = 1
-    else:
-        fidelity = usable_counts['0']/sum(usable_counts.values()) - usable_counts['1']/sum(usable_counts.values())
+    fidelity = usable_counts.get('0', 0)/sum(usable_counts.values()) - usable_counts.get('1', 0)/sum(usable_counts.values())
     return fidelity, sum(usable_counts.values())
 
 def main():
     model = load_model(r"C:\Users\Luke\OneDrive\Documents\Uni Stuff\Master's\NLP Project\QNLP_project\testing\model.lt")
-    sentence1_circuit, sentence2_circuit = sentence_to_circuit("woman prepares sauce .", "woman prepares tasty sauce .", model)
+    sentence1_circuit, sentence2_circuit = sentence_to_circuit("woman prepares sauce .", "woman prepares sauce .", model)
     fidelity, num_successes = fidelity_test(sentence1_circuit, sentence2_circuit)
     print(f"Fidelity: {fidelity}\nSuccessful Runs: {num_successes}")
-    
+
 main()
