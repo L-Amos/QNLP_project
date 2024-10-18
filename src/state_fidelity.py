@@ -47,8 +47,15 @@ def fidelity_test(sentence1_circuit, sentence2_circuit, draw=False):
     qc = qc.compose(sentence1_circuit, sentence1_reg, sentence_1_meas_reg)
     qc = qc.compose(sentence2_circuit, sentence2_reg, sentence_2_meas_reg)
     qc.barrier()
+    # Get sentence qubits
+    sentence_qubits = [qc.find_bit(qubit).index for qubit in qc.qubits]
+    print(sentence_qubits)
+    for gate in qc.data:
+        if gate.name == 'measure':
+            sentence_qubits.remove(qc.find_bit(gate.qubits[0]).index)
+    # Swap Test
     qc.h(control_reg)
-    qc.cswap(control_reg, sentence1_reg[1], sentence2_reg[1])
+    qc.cswap(*sentence_qubits)
     qc.h(control_reg)
     qc.measure(control_reg, fidelity_meas_reg)
     if draw:
@@ -66,8 +73,8 @@ def fidelity_test(sentence1_circuit, sentence2_circuit, draw=False):
 
 def main():
     model = load_model(r"C:\Users\Luke\OneDrive\Documents\Uni Stuff\Master's\NLP Project\QNLP_project\testing\model.lt")
-    sentence1_circuit, sentence2_circuit = sentence_to_circuit("woman prepares sauce .", "woman prepares sauce .", model)
-    fidelity, num_successes = fidelity_test(sentence1_circuit, sentence2_circuit)
+    sentence1_circuit, sentence2_circuit = sentence_to_circuit("woman prepares sauce .", "skillful person runs software .", model)
+    fidelity, num_successes = fidelity_test(sentence1_circuit, sentence2_circuit, draw=True)
     print(f"Fidelity: {fidelity}\nSuccessful Runs: {num_successes}")
 
 main()
