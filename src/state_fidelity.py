@@ -27,22 +27,17 @@ def load_model(filename):
     }
     return TketModel.from_checkpoint(filename, backend_config=backend_config)
 
-def sentence_to_circuit(sentence1, sentence2, model):
+def sentences_to_circuit(sentences, model):
     parser = BobcatParser()
     remove_cups = RemoveCupsRewriter()
     ansatz = IQPAnsatz({AtomicType.NOUN: 1, AtomicType.SENTENCE: 1}, n_layers=1, n_single_qubit_params=3)
     # Convert to DisCoCat Diagrams
-    sentence1_diagram = remove_cups(parser.sentence2diagram(sentence1))
-    sentence2_diagram = remove_cups(parser.sentence2diagram(sentence2))
-    # Convert to PQCs
-    sentence1_circuit = ansatz(sentence1_diagram)
-    sentence2_circuit = ansatz(sentence2_diagram)
-    quantum_circuits = model._fast_subs([sentence1_circuit, sentence2_circuit], model.weights)
-    sentence1_qiskit, sentence2_qiskit = [tk_to_qiskit(circuit.to_tk()) for circuit in quantum_circuits]
-    # Remove measurements - we are not done yet
-    # sentence1_qiskit.remove_final_measurements()
-    # sentence2_qiskit.remove_final_measurements()
-    return sentence1_qiskit, sentence2_qiskit
+    diagrams = [remove_cups(parser.sentence2diagram(sentence) for sentence in sentences)]
+    # Convert to PQCs and retrieve quantum circuits
+    circuits = [ansatz(diagram) for diagram in diagrams]
+    quantum_circuits = model._fast_subs(circuits, model.weights)
+    circuits_qiskit = [tk_to_qiskit(circuit.to_tk()) for circuit in quantum_circuits]
+    return circuits_qiskit
 
 def fidelity_test(sentence1, sentence2, model, draw=False):
     sentence1_circuit, sentence2_circuit = sentence_to_circuit(sentence1, sentence2, model)
