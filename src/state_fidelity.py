@@ -1,4 +1,5 @@
-#%%matplotlib qt5
+"""This module allows one to quantumly calculate the fidelity between two sentences using a trained lambeq model."""
+
 ### IMPORTS
 from lambeq import BobcatParser, RemoveCupsRewriter, AtomicType, IQPAnsatz, TketModel
 from pytket.extensions.qiskit import AerBackend, tk_to_qiskit
@@ -6,9 +7,6 @@ from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister, transpile
 from qiskit_aer import AerSimulator
 import matplotlib.pyplot as plt
 import numpy as np
-
-
-# LOAD MODEL
 
 def load_model(filename):
     """Loads a lambeq model from a checkpoint file and returns it as a TketModel object.
