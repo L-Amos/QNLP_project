@@ -14,10 +14,10 @@ def load_model(filename):
     """Loads a lambeq model from a checkpoint file and returns it as a TketModel object.
 
     Args:
-        filename (str): filename of checkpoint file
+        filename (str): filename of checkpoint file.
 
     Returns:
-        TketModel: the loaded model
+        TketModel: the loaded model.
     """
     backend = AerBackend()
     backend_config = {
@@ -31,11 +31,11 @@ def sentences_to_circuits(sentences, model):
     """Converts array of sentences into an array of qiskit quantum circuits using a trained lambeq model.
 
     Args:
-        sentences (arr): array of sentence strings
-        model (TketModel): trained lambeq model
+        sentences (arr): array of sentence strings.
+        model (TketModel): trained lambeq model.
 
     Returns:
-        arr: array of qiskit QuantumCircuit objects built from sentences
+        arr: array of qiskit QuantumCircuit objects built from sentences.
     """
     parser = BobcatParser()
     remove_cups = RemoveCupsRewriter()
@@ -49,6 +49,17 @@ def sentences_to_circuits(sentences, model):
     return circuits_qiskit
 
 def fidelity_test(sentence1, sentence2, model, draw=False):
+    """Returns fidelity between two sentences.
+
+    Args:
+        sentence1 (str): first sentence to be compared.
+        sentence2 (str): second sentence to be compared.
+        model (TketModel): trained lambeq model.
+        draw (bool, optional): flag to determine whether to draw the entire fidelity test quantum circuit. Defaults to False.
+
+    Returns:
+        arr: array of [fidelity (float), number of successful runs (int)]
+    """
     sentence1_circuit, sentence2_circuit = sentences_to_circuits([sentence1, sentence2], model)
     sentence1_reg = QuantumRegister(sentence1_circuit.num_qubits, "Sentence 1")
     sentence_1_meas_reg = ClassicalRegister(sentence1_circuit.num_clbits, "Sentence 1 Meas")
