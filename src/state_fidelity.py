@@ -11,6 +11,14 @@ import numpy as np
 # LOAD MODEL
 
 def load_model(filename):
+    """Loads a lambeq model from a checkpoint file and returns it as a TketModel object.
+
+    Args:
+        filename (str): filename of checkpoint file.
+
+    Returns:
+        TketModel: the loaded model.
+    """
     backend = AerBackend()
     backend_config = {
         'backend': backend,
