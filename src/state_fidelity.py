@@ -32,7 +32,7 @@ def sentences_to_circuit(sentences, model):
     remove_cups = RemoveCupsRewriter()
     ansatz = IQPAnsatz({AtomicType.NOUN: 1, AtomicType.SENTENCE: 1}, n_layers=1, n_single_qubit_params=3)
     # Convert to DisCoCat Diagrams
-    diagrams = [remove_cups(parser.sentence2diagram(sentence) for sentence in sentences)]
+    diagrams = [remove_cups(parser.sentence2diagram(sentence)) for sentence in sentences]
     # Convert to PQCs and retrieve quantum circuits
     circuits = [ansatz(diagram) for diagram in diagrams]
     quantum_circuits = model._fast_subs(circuits, model.weights)
@@ -40,7 +40,7 @@ def sentences_to_circuit(sentences, model):
     return circuits_qiskit
 
 def fidelity_test(sentence1, sentence2, model, draw=False):
-    sentence1_circuit, sentence2_circuit = sentence_to_circuit(sentence1, sentence2, model)
+    sentence1_circuit, sentence2_circuit = sentences_to_circuit([sentence1, sentence2], model)
     sentence1_reg = QuantumRegister(sentence1_circuit.num_qubits, "Sentence 1")
     sentence_1_meas_reg = ClassicalRegister(sentence1_circuit.num_clbits, "Sentence 1 Meas")
     sentence2_reg = QuantumRegister(sentence2_circuit.num_qubits, "Sentence 2")
