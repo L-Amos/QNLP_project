@@ -57,6 +57,6 @@ def main():
         lambeq_scores = {sentence: scores[sentence] for sentence in lambeq_rankings}
         dcg = np.sum([score/np.log2(i+2) for i,score in enumerate(lambeq_scores.values())])
         ndcg.append(dcg/idcg)
-    print(ndcg)
+    print(np.mean(ndcg))
 
 main()
