@@ -34,7 +34,7 @@ def get_lambeq_rankings(rank_dict, test_sentence, train_sentences, model):
 
 def main():
     bert_model = SentenceTransformer("all-MiniLM-L6-v2")
-    lambeq_model=load_model(r"C:\Users\Luke\OneDrive\Documents\Uni Stuff\Master's\NLP Project\QNLP_project\testing\model.lt")
+    lambeq_model=load_model(ROOT_PATH + r"\testing\model.lt")
     test_path = ROOT_PATH + r"\testing\data\test_data.txt"
     train_path = ROOT_PATH + r"\testing\data\training_data.txt"
     test_data, train_data = ingest(test_path, train_path)
@@ -58,5 +58,3 @@ def main():
         dcg = np.sum([score/np.log2(i+2) for i,score in enumerate(lambeq_scores.values())])
         ndcg.append(dcg/idcg)
     print(np.mean(ndcg))
-
-main()
