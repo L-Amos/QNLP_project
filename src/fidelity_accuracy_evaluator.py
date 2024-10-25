@@ -2,7 +2,7 @@ from sentence_transformers import SentenceTransformer, util
 import numpy as np
 from state_fidelity import load_model, fidelity_test
 
-ROOT_PATH = r"C:\Users\Luke\OneDrive\Documents\Uni Stuff\Master's\NLP Project\QNLP_project"
+ROOT_PATH = r"C:\Users\lukea\OneDrive\Documents\Uni Stuff\Master's\NLP Project\QNLP_project"
 
 def ingest(test_path, training_path):
     # Retrieve test sentences + parse
@@ -32,6 +32,20 @@ def get_lambeq_rankings(rank_dict, test_sentence, train_sentences, model):
         rank_dict[train_sentence] = fidelity
     return dict(sorted(rank_dict.items(), key=lambda x:x[1], reverse=True))  # Sort by fidelity in descending order
 
+def score_gen(rankings, test_sentence, test_data, train_data):
+    """Generates for items in ranking - LIKELY TO NEED EDITING"""
+    scores = {}
+    count = 0
+    for sentence in rankings:
+        if test_data[test_sentence] == train_data[sentence]:
+            scores[sentence] = len(rankings)-list(rankings.keys()).index(sentence)  # Set score to be the inverse of its index (so last item has score of 0)
+        else:
+            scores[sentence] = 0  # If sentence is part of wrong category, gets score of zero
+        if count < 5:
+            scores[sentence] = scores[sentence]*2  # Double top 5 scores to weight top 5
+        count += 1
+    return scores
+
 def main():
     bert_model = SentenceTransformer("all-MiniLM-L6-v2")
     lambeq_model=load_model(ROOT_PATH + r"\testing\model.lt")
@@ -41,20 +55,12 @@ def main():
     ndcg = []
     for test_sentence in list(test_data.keys()):
         bert_rankings = get_bert_rankings({}, test_sentence, list(train_data.keys()), bert_model)
-        scores = {}
-        # Only give a score if part of the correct category
-        count = 0
-        for sentence in bert_rankings:
-            if test_data[test_sentence] == train_data[sentence]:
-                scores[sentence] = len(bert_rankings)-list(bert_rankings.keys()).index(sentence)
-            else:
-                scores[sentence] = 0
-            if count < 5:
-                scores[sentence] = scores[sentence]*2
-            count += 1
+        scores = score_gen(bert_rankings, test_sentence, test_data, train_data)
         idcg = np.sum([score/np.log2(i+2) for i,score in enumerate(scores.values())])
         lambeq_rankings = get_lambeq_rankings({}, test_sentence, list(train_data.keys()), lambeq_model)
         lambeq_scores = {sentence: scores[sentence] for sentence in lambeq_rankings}
         dcg = np.sum([score/np.log2(i+2) for i,score in enumerate(lambeq_scores.values())])
         ndcg.append(dcg/idcg)
     print(np.mean(ndcg))
+
+main()
