@@ -1,4 +1,5 @@
-#%%matplotlib qt5
+"""This module allows one to quantumly calculate the fidelity between two sentences using a trained lambeq model."""
+
 ### IMPORTS
 from lambeq import BobcatParser, RemoveCupsRewriter, AtomicType, IQPAnsatz, TketModel
 from pytket.extensions.qiskit import AerBackend, tk_to_qiskit
@@ -7,10 +8,15 @@ from qiskit_aer import AerSimulator
 import matplotlib.pyplot as plt
 import numpy as np
 
-
-# LOAD MODEL
-
 def load_model(filename):
+    """Loads a lambeq model from a checkpoint file and returns it as a TketModel object.
+
+    Args:
+        filename (str): filename of checkpoint file.
+
+    Returns:
+        TketModel: the loaded model.
+    """
     backend = AerBackend()
     backend_config = {
         'backend': backend,
@@ -19,24 +25,40 @@ def load_model(filename):
     }
     return TketModel.from_checkpoint(filename, backend_config=backend_config)
 
-def sentence_to_circuit(sentence1, sentence2, model):
+def sentences_to_circuits(sentences, model):
+    """Converts array of sentences into an array of qiskit quantum circuits using a trained lambeq model.
+
+    Args:
+        sentences (arr): array of sentence strings.
+        model (TketModel): trained lambeq model.
+
+    Returns:
+        arr: array of qiskit QuantumCircuit objects built from sentences.
+    """
     parser = BobcatParser()
     remove_cups = RemoveCupsRewriter()
     ansatz = IQPAnsatz({AtomicType.NOUN: 1, AtomicType.SENTENCE: 1}, n_layers=1, n_single_qubit_params=3)
     # Convert to DisCoCat Diagrams
-    sentence1_diagram = remove_cups(parser.sentence2diagram(sentence1))
-    sentence2_diagram = remove_cups(parser.sentence2diagram(sentence2))
-    # Convert to PQCs
-    sentence1_circuit = ansatz(sentence1_diagram)
-    sentence2_circuit = ansatz(sentence2_diagram)
-    quantum_circuits = model._fast_subs([sentence1_circuit, sentence2_circuit], model.weights)
-    sentence1_qiskit, sentence2_qiskit = [tk_to_qiskit(circuit.to_tk()) for circuit in quantum_circuits]
-    # Remove measurements - we are not done yet
-    # sentence1_qiskit.remove_final_measurements()
-    # sentence2_qiskit.remove_final_measurements()
-    return sentence1_qiskit, sentence2_qiskit
+    diagrams = [remove_cups(parser.sentence2diagram(sentence)) for sentence in sentences]
+    # Convert to PQCs and retrieve quantum circuits
+    circuits = [ansatz(diagram) for diagram in diagrams]
+    quantum_circuits = model._fast_subs(circuits, model.weights)
+    circuits_qiskit = [tk_to_qiskit(circuit.to_tk()) for circuit in quantum_circuits]
+    return circuits_qiskit
 
-def fidelity_test(sentence1_circuit, sentence2_circuit, draw=False):
+def fidelity_test(sentence1, sentence2, model, draw=False):
+    """Returns fidelity between two sentences.
+
+    Args:
+        sentence1 (str): first sentence to be compared.
+        sentence2 (str): second sentence to be compared.
+        model (TketModel): trained lambeq model.
+        draw (bool, optional): flag to determine whether to draw the entire fidelity test quantum circuit. Defaults to False.
+
+    Returns:
+        arr: array of [fidelity (float), number of successful runs (int)]
+    """
+    sentence1_circuit, sentence2_circuit = sentences_to_circuits([sentence1, sentence2], model)
     sentence1_reg = QuantumRegister(sentence1_circuit.num_qubits, "Sentence 1")
     sentence_1_meas_reg = ClassicalRegister(sentence1_circuit.num_clbits, "Sentence 1 Meas")
     sentence2_reg = QuantumRegister(sentence2_circuit.num_qubits, "Sentence 2")
@@ -69,11 +91,3 @@ def fidelity_test(sentence1_circuit, sentence2_circuit, draw=False):
     usable_counts = {result[0]: counts[result] for result in counts if '1' not in result[1:]}
     fidelity = usable_counts.get('0', 0)/sum(usable_counts.values()) - usable_counts.get('1', 0)/sum(usable_counts.values())
     return fidelity, sum(usable_counts.values())
-
-def main():
-    model = load_model(r"C:\Users\Luke\OneDrive\Documents\Uni Stuff\Master's\NLP Project\QNLP_project\testing\model.lt")
-    sentence1_circuit, sentence2_circuit = sentence_to_circuit("woman prepares sauce .", "skillful person runs software .", model)
-    fidelity, num_successes = fidelity_test(sentence1_circuit, sentence2_circuit)
-    print(f"Fidelity: {fidelity}\nSuccessful Runs: {num_successes}")
-
-main()
