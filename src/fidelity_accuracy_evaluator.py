@@ -2,22 +2,17 @@ from sentence_transformers import SentenceTransformer, util
 import numpy as np
 from state_fidelity import load_model, fidelity_test
 
-ROOT_PATH = r"C:\Users\lukea\OneDrive\Documents\Uni Stuff\Master's\NLP Project\QNLP_project"
+ROOT_PATH = r"C:\Users\Luke\OneDrive\Documents\Uni Stuff\Master's\NLP Project\QNLP_project"
 
-def ingest(test_path, training_path):
+def ingest(file_path):
     # Retrieve test sentences + parse
-    with open(test_path) as f:
-        test_sentences_raw = f.readlines()
-    test_sentences = [sentence[3:].replace('\n', '') for sentence in test_sentences_raw]
-    test_labels = [sentence[0] for sentence in test_sentences_raw]
-    test_data = {sentence: label for sentence, label in zip(test_sentences, test_labels)}
+    with open(file_path) as f:
+        sentences_raw = f.readlines()
+    sentences = [sentence[3:].replace('\n', '') for sentence in sentences_raw]
+    labels = [sentence[0] for sentence in sentences_raw]
+    data = {sentence: label for sentence, label in zip(sentences, labels)}
     # Retrieve train sentences + parse
-    with open(training_path) as f:
-        train_sentences_raw = f.readlines()
-    train_sentences = [sentence[3:].replace('\n', '') for sentence in train_sentences_raw]
-    train_labels = [sentence[0] for sentence in train_sentences_raw]
-    train_data = {sentence: label for sentence, label in zip(train_sentences, train_labels)}
-    return test_data, train_data
+    return data
 
 def get_bert_rankings(test_sentence, train_sentences, model, rank_dict={}):
     for train_sentence in train_sentences:
@@ -51,9 +46,10 @@ def main():
     lambeq_model=load_model(ROOT_PATH + r"\testing\model.lt")
     test_path = ROOT_PATH + r"\testing\data\test_data.txt"
     train_path = ROOT_PATH + r"\testing\data\training_data.txt"
-    test_data, train_data = ingest(test_path, train_path)
+    test_data = ingest(test_path)
+    train_data = ingest(train_path)
     ndcg = []
-    for test_sentence in list(test_data.keys()):
+    for test_sentence in list(test_data.keys())[0:1]:
         bert_rankings = get_bert_rankings(test_sentence, list(train_data.keys()), bert_model)
         scores = score_gen(bert_rankings, test_sentence, test_data, train_data)
         idcg = np.sum([score/np.log2(i+2) for i,score in enumerate(scores.values())])
