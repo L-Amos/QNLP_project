@@ -41,15 +41,11 @@ def score_gen(rankings, test_sentence, test_data, train_data):
         count += 1
     return scores
 
-def main():
+def ndcg_eval(test_data, train_data):
     bert_model = SentenceTransformer("all-MiniLM-L6-v2")
     lambeq_model=load_model(ROOT_PATH + r"\testing\model.lt")
-    test_path = ROOT_PATH + r"\testing\data\test_data.txt"
-    train_path = ROOT_PATH + r"\testing\data\training_data.txt"
-    test_data = ingest(test_path)
-    train_data = ingest(train_path)
     ndcg = []
-    for test_sentence in list(test_data.keys())[0:1]:
+    for test_sentence in list(test_data.keys()):
         bert_rankings = get_bert_rankings(test_sentence, list(train_data.keys()), bert_model)
         scores = score_gen(bert_rankings, test_sentence, test_data, train_data)
         idcg = np.sum([score/np.log2(i+2) for i,score in enumerate(scores.values())])
@@ -57,6 +53,4 @@ def main():
         lambeq_scores = {sentence: scores[sentence] for sentence in lambeq_rankings}
         dcg = np.sum([score/np.log2(i+2) for i,score in enumerate(lambeq_scores.values())])
         ndcg.append(dcg/idcg)
-    print(np.mean(ndcg))
-
-main()
+    return np.mean(ndcg)
