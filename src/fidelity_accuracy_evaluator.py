@@ -19,14 +19,14 @@ def ingest(test_path, training_path):
     train_data = {sentence: label for sentence, label in zip(train_sentences, train_labels)}
     return test_data, train_data
 
-def get_bert_rankings(rank_dict, test_sentence, train_sentences, model):
+def get_bert_rankings(test_sentence, train_sentences, model, rank_dict={}):
     for train_sentence in train_sentences:
         embeddings = model.encode([test_sentence, train_sentence])
         similarity = util.pytorch_cos_sim(embeddings[0], embeddings[1])
         rank_dict[train_sentence] = float(similarity)
     return dict(sorted(rank_dict.items(), key=lambda x:x[1], reverse=True))  # Sort by similarity in descending order
         
-def get_lambeq_rankings(rank_dict, test_sentence, train_sentences, model):
+def get_lambeq_rankings(test_sentence, train_sentences, model, rank_dict={}):
     for train_sentence in train_sentences:
         fidelity = fidelity_test(train_sentence, test_sentence, model)[0]
         rank_dict[train_sentence] = fidelity
@@ -54,10 +54,10 @@ def main():
     test_data, train_data = ingest(test_path, train_path)
     ndcg = []
     for test_sentence in list(test_data.keys()):
-        bert_rankings = get_bert_rankings({}, test_sentence, list(train_data.keys()), bert_model)
+        bert_rankings = get_bert_rankings(test_sentence, list(train_data.keys()), bert_model)
         scores = score_gen(bert_rankings, test_sentence, test_data, train_data)
         idcg = np.sum([score/np.log2(i+2) for i,score in enumerate(scores.values())])
-        lambeq_rankings = get_lambeq_rankings({}, test_sentence, list(train_data.keys()), lambeq_model)
+        lambeq_rankings = get_lambeq_rankings(test_sentence, list(train_data.keys()), lambeq_model)
         lambeq_scores = {sentence: scores[sentence] for sentence in lambeq_rankings}
         dcg = np.sum([score/np.log2(i+2) for i,score in enumerate(lambeq_scores.values())])
         ndcg.append(dcg/idcg)
