@@ -1,0 +1,31 @@
+sentence_1,sentence_2,label
+man prepares software .,woman bakes dinner .,0.45785103738307953
+man bakes tasty meal .,skillful person prepares meal .,0.7985281050205231
+skillful woman runs program .,woman prepares program .,0.8895601332187653
+person debugs useful software .,woman prepares program .,0.6347220838069916
+man debugs useful application .,skillful person cooks sauce .,0.5404433161020279
+person prepares software .,person runs program .,0.8080041706562042
+person runs program .,man prepares useful application .,0.7022149115800858
+person cooks meal .,skillful person bakes meal .,0.9010588526725769
+skillful person cooks meal .,woman debugs software .,0.5285315979272127
+woman prepares tasty meal .,person runs program .,0.5679437145590782
+man runs software .,skillful woman debugs program .,0.6543147414922714
+woman cooks tasty meal .,skillful person bakes dinner .,0.8019658327102661
+woman runs program .,man prepares dinner .,0.507512656506151
+woman cooks meal .,woman debugs useful program .,0.5906298905611038
+skillful man bakes dinner .,woman debugs useful program .,0.49834500008728355
+person debugs useful application .,man cooks dinner .,0.49732769024558365
+man prepares dinner .,man debugs program .,0.5504607148468494
+skillful man runs software .,man cooks dinner .,0.6113365590572357
+skillful person prepares meal .,skillful woman prepares meal .,0.9113492667675018
+person bakes tasty sauce .,person cooks meal .,0.8215673565864563
+skillful man prepares software .,skillful person prepares meal .,0.7260835617780685
+person prepares software .,man cooks dinner .,0.5741718262434006
+man debugs program .,man runs software .,0.7851709127426147
+skillful person cooks meal .,woman prepares sauce .,0.7176133990287781
+man bakes tasty sauce .,woman bakes dinner .,0.6932013779878616
+woman debugs software .,woman prepares program .,0.7237424999475479
+skillful man debugs software .,person cooks dinner .,0.51441415771842
+woman runs useful application .,woman bakes tasty meal .,0.62099190056324
+woman runs application .,person cooks meal .,0.5358066558837891
+man bakes tasty dinner .,skillful man cooks dinner .,0.8737108707427979
