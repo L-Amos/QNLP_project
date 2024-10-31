@@ -2,6 +2,7 @@
 ### IMPORTS
 from lambeq import BobcatParser, RemoveCupsRewriter, AtomicType, IQPAnsatz, TketModel
 from pytket import Circuit, Qubit, Bit
+from pytket.extensions.qiskit import AerBackend
 from pytket.circuit import OpType
 from pytket.circuit.display import view_browser as draw
 from sentence_transformers import SentenceTransformer, util
@@ -40,13 +41,18 @@ def fidelity_circuit_gen(sentence_1, sentence_2):
     fidelity_pqc.Measure(control_qubit, fidelity_cbit)
     return fidelity_pqc
 
-# Load SBERT model
-model = SentenceTransformer("all-MiniLM-L6-v2")
-# Define pair of sentences
-sentence_1 = "skillful man prepares sauce ."
-sentence_2 = "skillful man bakes dinner ."
-# Get SBERT similarities
-embeddings = model.encode([sentence_1, sentence_2])
-SBERT_similarity = util.pytorch_cos_sim(embeddings[0], embeddings[1])
-fidelity_circuit = fidelity_circuit_gen(sentence_1, sentence_2)
-draw(fidelity_circuit)
+def train():
+    train_data = np.genfromtxt('src/example_train.csv', delimiter=',', dtype=None)
+    circuits = []
+    labels = train_data[:,2]
+    for sentence_1, sentence_2 in train_data[:,:2]:
+        circuits.append(fidelity_circuit_gen(sentence_1, sentence_2))
+    backend = AerBackend()
+    backend_config = {
+        'backend': backend,
+        'compilation': backend.default_compilation_pass(2),
+        'shots': 8192
+    }
+    model = TketModel.from_diagrams(circuits, backend_config=backend_config)
+
+train()
