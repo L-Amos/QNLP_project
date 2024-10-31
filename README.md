@@ -15,4 +15,5 @@
 - [Day 5](/Journal/18_10_24.md)
 - [Day 6](/Journal/23_10_24.md)
 - [Day 7](/Journal/24_10_24.md)
+- [Day 8](/Journal/31_10_24.md)
 - **[Situation Report 1](/Journal/SitRep-29-10-24.ipynb)**
