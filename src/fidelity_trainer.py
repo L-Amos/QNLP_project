@@ -10,18 +10,29 @@ from typing import Any
 
 import numpy as np
 
-from lambeq.backend.quantum import Diagram as Circuit, Id, Measure
-from lambeq.backend.tensor import Diagram
+from lambeq import BobcatParser, RemoveCupsRewriter, IQPAnsatz, AtomicType
+from lambeq.backend.quantum import Diagram
 from lambeq.training.quantum_model import QuantumModel
 from pytket.extensions.qiskit import tk_to_qiskit
 from pytket.circuit import OpType
-from pytket.circuit.display import view_browser as draw
 from pytket import Qubit, Bit
-from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister, transpile
+from qiskit import transpile
 from qiskit_aer import AerSimulator
 
 
-class NewTketModel(QuantumModel):
+
+def fidelity_pqc_gen(sentence_1, sentence_2):
+    # Turn into PQCs using DisCoCat
+    parser = BobcatParser()
+    remove_cups = RemoveCupsRewriter()
+    sentence_1_diagram = remove_cups(parser.sentence2diagram(sentence_1))
+    sentence_2_diagram = remove_cups(parser.sentence2diagram(sentence_2))
+    composed_sentences = sentence_1_diagram @ sentence_2_diagram
+    ansatz = IQPAnsatz({AtomicType.NOUN: 1, AtomicType.SENTENCE: 1}, n_layers=1, n_single_qubit_params=3)
+    fidelity_pqc = ansatz(composed_sentences)
+    return fidelity_pqc
+
+class FidelityModel(QuantumModel):
     """Model based on `tket`.
 
     This can run either shot-based simulations of a quantum
@@ -115,22 +126,6 @@ class NewTketModel(QuantumModel):
             fidelity = usable_counts.get('0', 0)/sum(usable_counts.values()) - usable_counts.get('1', 0)/sum(usable_counts.values())
             fidelities.append(fidelity)
         return np.array(fidelities)
-        
-
-        # tensors = Circuit.eval(
-        #     *measured,  # type: ignore[arg-type]
-        #     **self.backend_config,
-        #     seed=self._randint()
-        # )
-        # self.backend_config['backend'].empty_cache()
-        
-        # # lambeq evals a single diagram into a single result
-        # # and not a list of results
-        # if len(diagrams) == 1:
-        #     result = self._normalise_vector(tensors)
-        #     return result.reshape(1, *result.shape)
-        # return np.array([self._normalise_vector(t) for t in tensors])
-
 
     def forward(self, x: list[Diagram]) -> np.ndarray:
         """Perform default forward pass of a lambeq quantum model.
