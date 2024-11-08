@@ -102,7 +102,7 @@ class FidelityModel(QuantumModel):
        
         for circuit in tk_circuits:
              # Add Swap Test
-            usable_counts = []
+            usable_counts = {}
             fidelity_cbit = Bit("fidelity_meas", 0)
             circuit.add_bit(fidelity_cbit)
             control_qubit = Qubit("control", 0)
@@ -118,13 +118,15 @@ class FidelityModel(QuantumModel):
             # Measure Outcome
             sim = AerSimulator()
             transpiled_circ = transpile(qc, sim)
-            while not usable_counts:
+            while not usable_counts.values():
                 job = sim.run(transpiled_circ, shots=2**16)
                 results = job.result()
                 # Post-selection
                 counts = results.get_counts()
-                usable_counts = {result[0]: counts[result] for result in counts if '1' not in result[1:]}
-                print(usable_counts)
+                try:
+                    usable_counts = {result[0]: counts[result] for result in counts if '1' not in result[1:]}
+                except ZeroDivisionError:
+                    usable_counts = {}
             fidelity = usable_counts.get('0', 0)/sum(usable_counts.values()) - usable_counts.get('1', 0)/sum(usable_counts.values())
             fidelities.append(fidelity)
         return np.array(fidelities)
