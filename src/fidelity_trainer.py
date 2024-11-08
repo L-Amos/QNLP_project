@@ -27,9 +27,8 @@ def fidelity_pqc_gen(sentence_1, sentence_2):
     remove_cups = RemoveCupsRewriter()
     sentence_1_diagram = remove_cups(parser.sentence2diagram(sentence_1))
     sentence_2_diagram = remove_cups(parser.sentence2diagram(sentence_2))
-    composed_sentences = sentence_1_diagram @ sentence_2_diagram
     ansatz = IQPAnsatz({AtomicType.NOUN: 1, AtomicType.SENTENCE: 1}, n_layers=1, n_single_qubit_params=3)
-    fidelity_pqc = ansatz(composed_sentences)
+    fidelity_pqc = ansatz(sentence_1_diagram @ sentence_2_diagram)
     return fidelity_pqc
 
 class FidelityModel(QuantumModel):
