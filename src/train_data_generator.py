@@ -6,7 +6,7 @@ import fidelity_accuracy_evaluator as fae
 model = SentenceTransformer("all-MiniLM-L6-v2")
 sentences = list(fae.ingest("testing/data/training_data.txt").keys())
 data = []
-for ind1, ind2 in np.random.randint(0, len(sentences), (70,2)):
+for ind1, ind2 in np.random.randint(0, len(sentences), (130,2)):
     embeddings = model.encode([sentences[ind1], sentences[ind2]])
     SBERT_similarity = (float(util.pytorch_cos_sim(embeddings[0], embeddings[1]))+1)/2
     data.append([sentences[ind1], sentences[ind2], SBERT_similarity])
