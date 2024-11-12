@@ -1,0 +1,21 @@
+sentence_1,sentence_2,label
+man bakes tasty dinner .,person prepares tasty sauce .,0.7306196242570877
+skillful man bakes meal .,man prepares meal .,0.8711004853248596
+skillful man prepares sauce .,person prepares tasty sauce .,0.9225753843784332
+woman runs application .,woman runs program .,0.9097141623497009
+skillful man prepares sauce .,skillful woman bakes sauce .,0.7669216692447662
+man prepares program ,woman runs useful application .,0.6296314597129822
+man debugs useful program .,man debugs useful program .,1.0
+skillful man runs software .,woman debugs application .,0.6647278815507889
+skillful man prepares sauce .,man bakes tasty dinner .,0.7452860921621323
+woman cooks tasty meal .,skillful woman bakes meal .,0.9017828106880188
+man bakes tasty dinner .,woman runs program .,0.46776029095053673
+skillful man bakes meal .,skillful woman debugs program .,0.5474371314048767
+skillful man prepares sauce .,woman runs useful application .,0.5252944733947515
+woman runs application .,man cooks dinner .,0.4637644700706005
+skillful man prepares sauce .,skillful woman debugs program .,0.5732314065098763
+man prepares program ,woman prepares dinner .,0.5511497892439365
+man debugs useful program .,skillful person prepares meal .,0.5297333896160126
+skillful man runs software .,skillful man cooks meal .,0.6919595003128052
+skillful man prepares sauce .,woman debugs application .,0.5063506253063679
+woman cooks tasty meal .,skillful man prepares program .,0.5011178681161255
