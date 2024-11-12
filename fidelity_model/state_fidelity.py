@@ -6,7 +6,7 @@ from pytket.extensions.qiskit import AerBackend, tk_to_qiskit
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister, transpile
 from qiskit_aer import AerSimulator
 import matplotlib.pyplot as plt
-from fidelity_model.fidelity_trainer import FidelityModel
+from fidelity_trainer import FidelityModel
 
 def load_model(filename):
     """Loads a lambeq model from a checkpoint file and returns it as a TketModel object.
