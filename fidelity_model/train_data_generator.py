@@ -10,7 +10,8 @@ it_sentences = [sentence for sentence in all_sentences.keys() if all_sentences[s
 cooking_sentences = [sentence for sentence in all_sentences.keys() if all_sentences[sentence]=="1"]
 
 # Both same
-for sentence_1 in all_sentences.keys():
+sentences_to_add = np.random.choice(list(all_sentences.keys()), size=40)
+for sentence_1 in sentences_to_add:
     ind = np.random.randint(0, len(it_sentences))
     if sentence_1 in it_sentences:
         sentence_2 = it_sentences[ind]
@@ -20,7 +21,7 @@ for sentence_1 in all_sentences.keys():
     SBERT_similarity = (float(util.pytorch_cos_sim(embeddings[0], embeddings[1]))+1)/2
     data.append([sentence_1, sentence_2, SBERT_similarity])
 # Both Different
-for sentence_1 in all_sentences.keys():
+for sentence_1 in sentences_to_add:
     ind = np.random.randint(0, len(it_sentences))
     if sentence_1 not in it_sentences:
         sentence_2 = it_sentences[ind]
