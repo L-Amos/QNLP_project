@@ -1,7 +1,7 @@
 from sentence_transformers import SentenceTransformer, util
 import numpy as np
-from state_fidelity import load_model
-from fidelity_trainer import fidelity_pqc_gen
+from fidelity_model.state_fidelity import load_model
+from fidelity_model.fidelity_trainer import fidelity_pqc_gen
 
 ROOT_PATH = r"C:\Users\Luke\OneDrive\Documents\Uni Stuff\Master's\NLP Project\QNLP_project"
 
