@@ -5,7 +5,7 @@ from fidelity_trainer import fidelity_pqc_gen, FidelityModel
 
 def ingest(file_path):
     # Retrieve test sentences + parse
-    with open(file_path) as f:
+    with open(file_path, "r", encoding="utf8") as f:
         sentences_raw = f.readlines()
     sentences = [sentence[3:].replace('\n', '') for sentence in sentences_raw]
     labels = [sentence[0] for sentence in sentences_raw]
