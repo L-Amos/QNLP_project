@@ -1,9 +1,7 @@
 from sentence_transformers import SentenceTransformer, util
 import numpy as np
-from fidelity_model.state_fidelity import load_model
-from fidelity_model.fidelity_trainer import fidelity_pqc_gen
-
-ROOT_PATH = r"C:\Users\Luke\OneDrive\Documents\Uni Stuff\Master's\NLP Project\QNLP_project"
+from pytket.extensions.qiskit import AerBackend
+from fidelity_trainer import fidelity_pqc_gen, FidelityModel
 
 def ingest(file_path):
     # Retrieve test sentences + parse
@@ -14,6 +12,23 @@ def ingest(file_path):
     data = {sentence: label for sentence, label in zip(sentences, labels)}
     # Retrieve train sentences + parse
     return data
+
+def load_model(filename):
+    """Loads a lambeq model from a checkpoint file and returns it as a TketModel object.
+
+    Args:
+        filename (str): filename of checkpoint file.
+
+    Returns:
+        FidelityModel: the loaded model.
+    """
+    backend = AerBackend()
+    backend_config = {
+        'backend': backend,
+        'compilation': backend.default_compilation_pass(2),
+        'shots': 1024
+    }
+    return FidelityModel.from_checkpoint(filename, backend_config=backend_config)
 
 def get_bert_rankings(test_sentence, train_sentences, model, rank_dict={}):
     for train_sentence in train_sentences:
@@ -44,7 +59,7 @@ def score_gen(rankings, test_sentence, test_data, train_data):
 
 def ndcg_eval(test_data, train_data):
     bert_model = SentenceTransformer("all-MiniLM-L6-v2")
-    lambeq_model=load_model(ROOT_PATH + r"\best_fidelity_model.lt")
+    lambeq_model=load_model("best_fidelity_model.lt")
     ndcg = []
     for test_sentence in list(test_data.keys()):
         bert_rankings = get_bert_rankings(test_sentence, list(train_data.keys()), bert_model)
@@ -56,9 +71,3 @@ def ndcg_eval(test_data, train_data):
         ndcg.append(dcg/idcg)
         print(dcg/idcg)
     return np.mean(ndcg)
-
-test_path = ROOT_PATH + r"\testing\data\test_data.txt"
-train_path = ROOT_PATH + r"\testing\data\training_data.txt"
-test_data = ingest(test_path)
-train_data = ingest(train_path)
-ndcg_eval(test_data, train_data)
