@@ -23,8 +23,7 @@ from qiskit_aer import AerSimulator
 
 def fidelity_pqc_gen(sentence_1, sentence_2):
     # # Turn into PQCs using DisCoCat
-    # parser = BobcatParser()
-    from lambeq import spiders_reader as parser
+    parser = BobcatParser()
     remove_cups = RemoveCupsRewriter()
     sentence_1_diagram = remove_cups(parser.sentence2diagram(sentence_1))
     sentence_2_diagram = remove_cups(parser.sentence2diagram(sentence_2))
