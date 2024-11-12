@@ -6,6 +6,7 @@ from pytket.extensions.qiskit import AerBackend, tk_to_qiskit
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister, transpile
 from qiskit_aer import AerSimulator
 import matplotlib.pyplot as plt
+from fidelity_trainer import FidelityModel
 
 def load_model(filename):
     """Loads a lambeq model from a checkpoint file and returns it as a TketModel object.
@@ -22,7 +23,7 @@ def load_model(filename):
         'compilation': backend.default_compilation_pass(2),
         'shots': 1024
     }
-    return TketModel.from_checkpoint(filename, backend_config=backend_config)
+    return FidelityModel.from_checkpoint(filename, backend_config=backend_config)
 
 def sentences_to_circuits(sentences, model):
     """Converts array of sentences into an array of qiskit quantum circuits using a trained lambeq model.
