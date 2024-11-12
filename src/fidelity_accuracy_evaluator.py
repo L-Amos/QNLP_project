@@ -1,6 +1,7 @@
 from sentence_transformers import SentenceTransformer, util
 import numpy as np
-from state_fidelity import load_model, fidelity_test
+from state_fidelity import load_model
+from fidelity_trainer import fidelity_pqc_gen
 
 ROOT_PATH = r"C:\Users\Luke\OneDrive\Documents\Uni Stuff\Master's\NLP Project\QNLP_project"
 
@@ -22,9 +23,9 @@ def get_bert_rankings(test_sentence, train_sentences, model, rank_dict={}):
     return dict(sorted(rank_dict.items(), key=lambda x:x[1], reverse=True))  # Sort by similarity in descending order
         
 def get_lambeq_rankings(test_sentence, train_sentences, model, rank_dict={}):
-    for train_sentence in train_sentences:
-        fidelity = fidelity_test(train_sentence, test_sentence, model)[0]
-        rank_dict[train_sentence] = fidelity
+    diagrams = [fidelity_pqc_gen(sentence, test_sentence) for sentence in train_sentences]
+    fidelities = model(diagrams)
+    rank_dict = {sentence:fidelity for sentence, fidelity in zip(train_sentences, fidelities)}
     return dict(sorted(rank_dict.items(), key=lambda x:x[1], reverse=True))  # Sort by fidelity in descending order
 
 def score_gen(rankings, test_sentence, test_data, train_data):
@@ -43,7 +44,7 @@ def score_gen(rankings, test_sentence, test_data, train_data):
 
 def ndcg_eval(test_data, train_data):
     bert_model = SentenceTransformer("all-MiniLM-L6-v2")
-    lambeq_model=load_model(ROOT_PATH + r"\testing\model.lt")
+    lambeq_model=load_model(ROOT_PATH + r"\best_fidelity_model.lt")
     ndcg = []
     for test_sentence in list(test_data.keys()):
         bert_rankings = get_bert_rankings(test_sentence, list(train_data.keys()), bert_model)
@@ -53,4 +54,11 @@ def ndcg_eval(test_data, train_data):
         lambeq_scores = {sentence: scores[sentence] for sentence in lambeq_rankings}
         dcg = np.sum([score/np.log2(i+2) for i,score in enumerate(lambeq_scores.values())])
         ndcg.append(dcg/idcg)
+        print(dcg/idcg)
     return np.mean(ndcg)
+
+test_path = ROOT_PATH + r"\testing\data\test_data.txt"
+train_path = ROOT_PATH + r"\testing\data\training_data.txt"
+test_data = ingest(test_path)
+train_data = ingest(train_path)
+ndcg_eval(test_data, train_data)
