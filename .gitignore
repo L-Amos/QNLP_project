@@ -3,3 +3,4 @@
 testing/state_fidelity_with_model.ipynb
 */__pycache__
 src/training_with_fidelity.ipynb
+gpu.py
