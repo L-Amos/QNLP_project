@@ -37,12 +37,13 @@ class FidelityModel(QuantumModel):
     fidelity testing to find semantic similarity. 
     """
 
-    def __init__(self) -> None:
+    def __init__(self, device="CPU") -> None:
         """Initialise TketModel based on the `t|ket>` backend.
 
         """
         super().__init__()
         self.rng = np.random.default_rng()
+        self.device = device
 
     def _randint(self, low: int = -1 << 63, high: int = (1 << 63)-1) -> int:
         return self.rng.integers(low, high, dtype=np.int64)
@@ -96,8 +97,9 @@ class FidelityModel(QuantumModel):
             circuit.Measure(control_qubit, fidelity_cbit)
             qc = tk_to_qiskit(circuit)
             # Measure Outcome
-            sim = AerSimulator()
-            sim.set_options(precision='single')
+            sim = AerSimulator(device=self.device)
+            if self.device=="GPU":
+                sim.set_options(precision='single')
             transpiled_circ = transpile(qc, sim)
             while not usable_counts.values():
                 job = sim.run(transpiled_circ, shots=2**17)
