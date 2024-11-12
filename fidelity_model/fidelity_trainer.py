@@ -33,36 +33,15 @@ def fidelity_pqc_gen(sentence_1, sentence_2):
     return fidelity_pqc
 
 class FidelityModel(QuantumModel):
-    """Model based on `tket`.
-
-    This can run either shot-based simulations of a quantum
-    pipeline or experiments run on quantum hardware using `tket`.
-
+    """Model based on Lambeq' `TketModel` class. Built for sentence
+    fidelity testing to find semantic similarity. 
     """
 
-    def __init__(self, backend_config: dict[str, Any]) -> None:
+    def __init__(self) -> None:
         """Initialise TketModel based on the `t|ket>` backend.
-
-        Other Parameters
-        ----------------
-        backend_config : dict
-            Dictionary containing the backend configuration. Must
-            include the fields `backend`, `compilation` and `shots`.
-
-        Raises
-        ------
-        KeyError
-            If `backend_config` is not provided or has missing fields.
 
         """
         super().__init__()
-
-        fields = ('backend', 'compilation', 'shots')
-        missing_fields = [f for f in fields if f not in backend_config]
-        if missing_fields:
-            raise KeyError('Missing arguments in backend configuation. '
-                           f'Missing arguments: {missing_fields}.')
-        self.backend_config = backend_config
         self.rng = np.random.default_rng()
 
     def _randint(self, low: int = -1 << 63, high: int = (1 << 63)-1) -> int:
@@ -118,9 +97,10 @@ class FidelityModel(QuantumModel):
             qc = tk_to_qiskit(circuit)
             # Measure Outcome
             sim = AerSimulator()
+            sim.set_options(precision='single')
             transpiled_circ = transpile(qc, sim)
             while not usable_counts.values():
-                job = sim.run(transpiled_circ, shots=2**16)
+                job = sim.run(transpiled_circ, shots=2**17)
                 results = job.result()
                 # Post-selection
                 counts = results.get_counts()
