@@ -17,7 +17,7 @@ from pytket.extensions.qiskit import tk_to_qiskit
 from pytket.circuit import OpType
 from pytket import Qubit, Bit
 from qiskit import transpile
-from qiskit_aer import AerSimulator
+from qiskit_aer import StatevectorSimulator
 
 
 
@@ -76,42 +76,24 @@ class FidelityModel(QuantumModel):
         
 
         
-        tk_circuits = self._fast_subs(diagrams, self.weights)
-        tk_circuits = [circuit.to_tk() for circuit in tk_circuits]
+        lambeq_circs = self._fast_subs(diagrams, self.weights)
+        qiskit_circuits = [tk_to_qiskit(circuit.to_tk()) for circuit in lambeq_circs]
         fidelities = []
        
-        for circuit in tk_circuits:
-             # Add Swap Test
-            usable_counts = {}
-            fidelity_cbit = Bit("fidelity_meas", 0)
-            circuit.add_bit(fidelity_cbit)
-            control_qubit = Qubit("control", 0)
-            circuit.add_qubit(control_qubit)
-            circuit.add_barrier(circuit.qubits)  # Barrier between sentence PQCs and swap test
-            measured_qubits = [op.qubits[0] for op in circuit.commands_of_type(OpType.from_name('Measure'))]
-            cswap_qubits = [qubit for qubit in circuit.qubits if qubit not in measured_qubits]
-            circuit.H(control_qubit)
-            circuit.CSWAP(*cswap_qubits)
-            circuit.H(control_qubit)
-            circuit.Measure(control_qubit, fidelity_cbit)
-            qc = tk_to_qiskit(circuit)
+        for qc in qiskit_circuits:
+             # Find sentence qubits
+            sentence_qubits = [qc.find_bit(qubit).index for qubit in qc.qubits]
+            for gate in qc.data:
+                if gate.name == 'measure':
+                    sentence_qubits.remove(qc.find_bit(gate.qubits[0]).index)
             # Measure Outcome
-            sim = AerSimulator(device=self.device)
+            sim = StatevectorSimulator(device=self.device)
             if self.device=="GPU":
                 sim.set_options(precision='single')
-            transpiled_circ = transpile(qc, sim)
-            while not usable_counts.values():
-                job = sim.run(transpiled_circ, shots=2**17)
-                results = job.result()
-                # Post-selection
-                counts = results.get_counts()
-                try:
-                    usable_counts = {result[0]: counts[result] for result in counts if '1' not in result[1:]}
-                except ZeroDivisionError:
-                    usable_counts = {}
-            fidelity = usable_counts.get('0', 0)/sum(usable_counts.values()) - usable_counts.get('1', 0)/sum(usable_counts.values())
-            fidelities.append(fidelity)
-        return np.array(fidelities)
+            job = sim.run(qc)
+            sv = job.result().get_statevector()
+            sv.draw('latex')
+        return sv
 
     def forward(self, x: list[Diagram]) -> np.ndarray:
         """Perform default forward pass of a lambeq quantum model.
