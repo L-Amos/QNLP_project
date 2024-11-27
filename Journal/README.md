@@ -3,24 +3,24 @@ Whenever this project is worked on, I write my thoughts and findings in a develo
 
 ## Journal Pages
 <details>
-    <summary><h2  style="display:inline-block">October</h2></summary>
+<summary><h2  style="display:inline-block">October</h2></summary>
 
-    - [Day 1](./october/24_10_02.md)
-    - [Day 2](./october/24_10_09.md)
-    - [Day 3](./october/24_10_10.md)
-    - [Day 4](./october/24_10_17.md)
-    - [Day 5](./october/24_10_18.md)
-    - [Day 6](./october/24_10_23.md)
-    - [Day 7](./october/24_10_24.md)
-    - [Day 8](./october/24_10_31.md)
+- [Day 1](./october/24_10_02.md)
+- [Day 2](./october/24_10_09.md)
+- [Day 3](./october/24_10_10.md)
+- [Day 4](./october/24_10_17.md)
+- [Day 5](./october/24_10_18.md)
+- [Day 6](./october/24_10_23.md)
+- [Day 7](./october/24_10_24.md)
+- [Day 8](./october/24_10_31.md)
 
 </details>
 
 <details>
-    <summary><h2  style="display:inline-block">November</h2></summary>
+<summary><h2  style="display:inline-block">November</h2></summary>
 
-    - [Day 9](./november/24_11_08.md)
-    - [Day 10](./november/24_11_12.md)
-    - [Day 11](./november/24_11_22.md)
+- [Day 9](./november/24_11_08.md)
+- [Day 10](./november/24_11_12.md)
+- [Day 11](./november/24_11_22.md)
 
 </details>
