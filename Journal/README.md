@@ -22,5 +22,6 @@ Whenever this project is worked on, I write my thoughts and findings in a develo
 - [Day 9](./november/24_11_08.md)
 - [Day 10](./november/24_11_12.md)
 - [Day 11](./november/24_11_22.md)
+- [Day 12](./november/24_11_28.md)
 
 </details>
