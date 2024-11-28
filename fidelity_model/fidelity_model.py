@@ -72,7 +72,7 @@ class FidelityModel(QuantumModel):
             If `model.symbols` are not initialised.
 
         """
-        from jax import jit
+        from jax import jit, devices
         import tensornetwork as tn
 
         if not self.symbols:
@@ -92,7 +92,7 @@ class FidelityModel(QuantumModel):
                     print('NOT MIXED BITCH')
                     result = backend.abs(result) ** 2
                 return self._normalise_vector(result)
-        self.lambdas[diagram] = jit(diagram_output)
+        self.lambdas[diagram] = jit(diagram_output, device=devices('cpu')[0])
         return self.lambdas[diagram]
 
     def get_diagram_output(
@@ -135,9 +135,9 @@ class FidelityModel(QuantumModel):
                 self.weights = self.weights.filled()
             res: jnp.ndarray = jnp.array([diag_f(self.weights)
                                           for diag_f in lambdified_diagrams])
-            #probs = [jnp.trace(result) for result in res]
-            #fidelities = [prob[0] - prob[1] for prob in probs]
-            return numpy.array(res)
+            probs = [jnp.diag(result) for result in res]
+            fidelities = [prob[0] - prob[1] for prob in probs]
+            return jnp.array(fidelities)
 
         diagrams = self._fast_subs(diagrams, self.weights)
         results = []
@@ -147,7 +147,11 @@ class FidelityModel(QuantumModel):
             # square amplitudes to get probabilties for pure circuits
             if not d.is_mixed:
                 result = numpy.abs(result) ** 2
-        return numpy.array(results)
+            results.append(self._normalise_vector(result))
+            # Calculate Fidelity
+            probs = [numpy.diag(result) for result in results]
+            fidelities = [prob[0] - prob[1] for prob in probs]
+        return numpy.array(fidelities)
 
     def forward(self, x: list[Diagram]) -> np.ndarray:
         """Perform default forward pass of a lambeq quantum model.

@@ -36,7 +36,7 @@ val_circuits = [fidelity_pqc_gen(sentence_1, sentence_2) for sentence_1, sentenc
 def loss(predictions, labels):
     return np.mean((predictions-labels)**2)
 
-model = FidelityModel.from_diagrams(train_circuits+val_circuits)
+model = FidelityModel.from_diagrams(train_circuits+val_circuits, use_jit=True)
 trainer = QuantumTrainer(
     model,
     loss_function=loss,
