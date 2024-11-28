@@ -4,4 +4,3 @@ The purpose of this project is to create a QNLP model which is trained to output
 ## Contents
 - [Lambeq's Binary Classification Model](/binary_classification_model/)
 - [My Fidelity Model](/fidelity_model/)
-- [Devlog](/Journal/)
