@@ -3,7 +3,7 @@ Whenever this project is worked on, I write my thoughts and findings in a develo
 
 ## Journal Pages
 <details>
-<summary><h2  style="display:inline-block">October</h2></summary>
+<summary><h3  style="display:inline-block">October</h3></summary>
 
 - [Day 1](./october/24_10_02.md)
 - [Day 2](./october/24_10_09.md)
@@ -17,7 +17,7 @@ Whenever this project is worked on, I write my thoughts and findings in a develo
 </details>
 
 <details>
-<summary><h2  style="display:inline-block">November</h2></summary>
+<summary><h3  style="display:inline-block">November</h3></summary>
 
 - [Day 9](./november/24_11_08.md)
 - [Day 10](./november/24_11_12.md)
