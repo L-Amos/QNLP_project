@@ -25,3 +25,6 @@ Whenever this project is worked on, I write my thoughts and findings in a develo
 - [Day 12](./november/24_11_28.md)
 
 </details>
+
+## Progress Reports
+[Progress Report 1 (29/10/24)](./SitRep-29-10-24.ipynb)
