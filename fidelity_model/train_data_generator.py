@@ -46,10 +46,14 @@ def pair_generation(sentence_1, same_category):
 # Both same
 for sentence in sentences_to_add:
     pair_data = pair_generation(sentence, same_category=True)
+    while pair_data in train_data:
+        pair_data = pair_generation(sentence, same_category=True)
     train_data.append(pair_data)
 # Both Different
 for sentence in sentences_to_add:
     pair_data = pair_generation(sentence, same_category=False)
+    while pair_data in train_data:
+        pair_data = pair_generation(sentence, same_category=True)
     train_data.append(pair_data)
 
 ### VALIDATION DATA ###
@@ -57,10 +61,14 @@ for sentence in sentences_to_add:
 val_sentences = np.random.choice(sentences_to_add,size=20)  # For 40 validation pairs
 for sentence in val_sentences:
     pair_data = pair_generation(sentence, same_category=True)
+    while pair_data in train_data or pair_data in val_data:
+        pair_data = pair_generation(sentence, same_category=True)
     val_data.append(pair_data)
 # Both Different
 for sentence in val_sentences:
     pair_data = pair_generation(sentence, same_category=False)
+    while pair_data in train_data or pair_data in val_data:
+        pair_data = pair_generation(sentence, same_category=True)
     val_data.append(pair_data)
 
 # Save to File
