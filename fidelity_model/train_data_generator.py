@@ -34,7 +34,7 @@ for sentence_1 in sentences_to_add:
         sentence_2 = it_sentences[ind]
     else:
         sentence_2 = cooking_sentences[ind]
-    embeddings = SBERT_model.encode([sentence_1, sentence_2])
+    embeddings = SBERT_model.encode([sentence_1, sentence_2], normalize_embeddings=True)
     similarity = return_similarity(embeddings)
     train_data.append([sentence_1, sentence_2, similarity])
 # Both Different
@@ -44,7 +44,7 @@ for sentence_1 in sentences_to_add:
         sentence_2 = it_sentences[ind]
     else:
         sentence_2 = cooking_sentences[ind]
-    embeddings = SBERT_model.encode([sentence_1, sentence_2])
+    embeddings = SBERT_model.encode([sentence_1, sentence_2], normalize_embeddings=True)
     similarity = return_similarity(embeddings)
     train_data.append([sentence_1, sentence_2, similarity])
 
@@ -57,7 +57,7 @@ for sentence_1 in val_sentences:
         sentence_2 = it_sentences[ind]
     else:
         sentence_2 = cooking_sentences[ind]
-    embeddings = SBERT_model.encode([sentence_1, sentence_2])
+    embeddings = SBERT_model.encode([sentence_1, sentence_2], normalize_embeddings=True)
     similarity = return_similarity(embeddings)
     val_data.append([sentence_1, sentence_2, similarity])
 # Both Different
@@ -67,7 +67,7 @@ for sentence_1 in val_sentences:
         sentence_2 = it_sentences[ind]
     else:
         sentence_2 = cooking_sentences[ind]
-    embeddings = SBERT_model.encode([sentence_1, sentence_2])
+    embeddings = SBERT_model.encode([sentence_1, sentence_2], normalize_embeddings=True)
     similarity = return_similarity(embeddings)
     val_data.append([sentence_1, sentence_2, similarity])
 
