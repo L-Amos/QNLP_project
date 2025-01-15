@@ -1,11 +1,20 @@
 import numpy as np
 from sentence_transformers import SentenceTransformer, util
-import fidelity_accuracy_evaluator as fae
+
+def ingest(file_path):
+    # Retrieve test sentences + parse
+    with open(file_path, "r", encoding="utf8") as f:
+        sentences_raw = f.readlines()
+    sentences = [sentence[3:].replace('\n', '') for sentence in sentences_raw]
+    labels = [sentence[0] for sentence in sentences_raw]
+    data = {sentence: label for sentence, label in zip(sentences, labels)}
+    # Retrieve train sentences + parse
+    return data
 
 # Read Sentences
 data = []
 SBERT_model = SentenceTransformer("all-MiniLM-L6-v2")
-all_sentences = fae.ingest("data/all_sentences.txt")
+all_sentences = ingest("data/all_sentences.txt")
 it_sentences = [sentence for sentence in all_sentences.keys() if all_sentences[sentence]=="0"]
 cooking_sentences = [sentence for sentence in all_sentences.keys() if all_sentences[sentence]=="1"]
 sentences_to_add = np.random.choice(list(all_sentences.keys()), size=40)
