@@ -12,7 +12,8 @@ def ingest(file_path):
     return data
 
 # Read Sentences
-data = []
+train_data = []
+val_data = []
 SBERT_model = SentenceTransformer("all-MiniLM-L6-v2", similarity_fn_name=SimilarityFunction.DOT_PRODUCT)
 all_sentences = ingest("data/all_sentences.txt")
 it_sentences = [sentence for sentence in all_sentences.keys() if all_sentences[sentence]=="0"]
@@ -29,7 +30,7 @@ for sentence_1 in sentences_to_add:
         sentence_2 = cooking_sentences[ind]
     embeddings = SBERT_model.encode([sentence_1, sentence_2])
     SBERT_similarity = np.abs(float(SBERT_model.similarity(embeddings[0], embeddings[1])))
-    data.append([sentence_1, sentence_2, SBERT_similarity])
+    train_data.append([sentence_1, sentence_2, SBERT_similarity])
 # Both Different
 for sentence_1 in sentences_to_add:
     ind = np.random.randint(0, len(it_sentences))
@@ -41,7 +42,7 @@ for sentence_1 in sentences_to_add:
     SBERT_similarity = np.abs(float(SBERT_model.similarity(embeddings[0], embeddings[1])))
     if SBERT_similarity > 1:  # Sometimes > 1 due to floating point errors
         SBERT_similarity = 1.0
-    data.append([sentence_1, sentence_2, SBERT_similarity])
+    train_data.append([sentence_1, sentence_2, SBERT_similarity])
 
 ### VALIDATION DATA ###
 # Both same
@@ -54,7 +55,7 @@ for sentence_1 in val_sentences:
         sentence_2 = cooking_sentences[ind]
     embeddings = SBERT_model.encode([sentence_1, sentence_2])
     SBERT_similarity = np.abs(float(SBERT_model.similarity(embeddings[0], embeddings[1])))
-    data.append([sentence_1, sentence_2, SBERT_similarity])
+    val_data.append([sentence_1, sentence_2, SBERT_similarity])
 # Both Different
 for sentence_1 in val_sentences:
     ind = np.random.randint(0, len(it_sentences))
@@ -66,8 +67,8 @@ for sentence_1 in val_sentences:
     SBERT_similarity = np.abs(float(SBERT_model.similarity(embeddings[0], embeddings[1])))
     if SBERT_similarity > 1:
         SBERT_similarity = 1.0
-    data.append([sentence_1, sentence_2, SBERT_similarity])
+    val_data.append([sentence_1, sentence_2, SBERT_similarity])
 
 # Save to File
-np.savetxt("data/train_data.csv",data, delimiter=",",  fmt="%s", header="sentence_1,sentence_2,label", comments="")
-np.savetxt("data/val_data.csv",data, delimiter=",",  fmt="%s", header="sentence_1,sentence_2,label", comments="")
+np.savetxt("data/train_data.csv",train_data, delimiter=",",  fmt="%s", header="sentence_1,sentence_2,label", comments="")
+np.savetxt("data/val_data.csv",val_data, delimiter=",",  fmt="%s", header="sentence_1,sentence_2,label", comments="")
