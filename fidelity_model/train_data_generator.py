@@ -1,5 +1,5 @@
 import numpy as np
-from sentence_transformers import SentenceTransformer, util
+from sentence_transformers import SentenceTransformer, SimilarityFunction
 
 def ingest(file_path):
     # Retrieve test sentences + parse
@@ -13,7 +13,7 @@ def ingest(file_path):
 
 # Read Sentences
 data = []
-SBERT_model = SentenceTransformer("all-MiniLM-L6-v2")
+SBERT_model = SentenceTransformer("all-MiniLM-L6-v2", similarity_fn_name=SimilarityFunction.DOT_PRODUCT)
 all_sentences = ingest("data/all_sentences.txt")
 it_sentences = [sentence for sentence in all_sentences.keys() if all_sentences[sentence]=="0"]
 cooking_sentences = [sentence for sentence in all_sentences.keys() if all_sentences[sentence]=="1"]
@@ -28,7 +28,7 @@ for sentence_1 in sentences_to_add:
     else:
         sentence_2 = cooking_sentences[ind]
     embeddings = SBERT_model.encode([sentence_1, sentence_2])
-    SBERT_similarity = (float(util.pytorch_cos_sim(embeddings[0], embeddings[1]))+1)/2
+    SBERT_similarity = np.abs(float(SBERT_model.similarity(embeddings[0], embeddings[1])))
     data.append([sentence_1, sentence_2, SBERT_similarity])
 # Both Different
 for sentence_1 in sentences_to_add:
@@ -38,8 +38,8 @@ for sentence_1 in sentences_to_add:
     else:
         sentence_2 = cooking_sentences[ind]
     embeddings = SBERT_model.encode([sentence_1, sentence_2])
-    SBERT_similarity = (float(util.pytorch_cos_sim(embeddings[0], embeddings[1]))+1)/2
-    if SBERT_similarity > 1:
+    SBERT_similarity = np.abs(float(SBERT_model.similarity(embeddings[0], embeddings[1])))
+    if SBERT_similarity > 1:  # Sometimes > 1 due to floating point errors
         SBERT_similarity = 1.0
     data.append([sentence_1, sentence_2, SBERT_similarity])
 
@@ -53,7 +53,7 @@ for sentence_1 in val_sentences:
     else:
         sentence_2 = cooking_sentences[ind]
     embeddings = SBERT_model.encode([sentence_1, sentence_2])
-    SBERT_similarity = (float(util.pytorch_cos_sim(embeddings[0], embeddings[1]))+1)/2
+    SBERT_similarity = np.abs(float(SBERT_model.similarity(embeddings[0], embeddings[1])))
     data.append([sentence_1, sentence_2, SBERT_similarity])
 # Both Different
 for sentence_1 in val_sentences:
@@ -63,7 +63,7 @@ for sentence_1 in val_sentences:
     else:
         sentence_2 = cooking_sentences[ind]
     embeddings = SBERT_model.encode([sentence_1, sentence_2])
-    SBERT_similarity = (float(util.pytorch_cos_sim(embeddings[0], embeddings[1]))+1)/2
+    SBERT_similarity = np.abs(float(SBERT_model.similarity(embeddings[0], embeddings[1])))
     if SBERT_similarity > 1:
         SBERT_similarity = 1.0
     data.append([sentence_1, sentence_2, SBERT_similarity])
