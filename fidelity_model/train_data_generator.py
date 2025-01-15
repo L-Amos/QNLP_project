@@ -11,6 +11,12 @@ def ingest(file_path):
     # Retrieve train sentences + parse
     return data
 
+def return_similarity(embeddings):
+    SBERT_similarity = np.abs(float(SBERT_model.similarity(embeddings[0], embeddings[1])))  # |<phi|psi>|
+    if SBERT_similarity > 1:  # Sometimes > 1 due to floating point errors
+        SBERT_similarity = 1.0
+    return SBERT_similarity
+
 # Read Sentences
 train_data = []
 val_data = []
@@ -29,8 +35,8 @@ for sentence_1 in sentences_to_add:
     else:
         sentence_2 = cooking_sentences[ind]
     embeddings = SBERT_model.encode([sentence_1, sentence_2])
-    SBERT_similarity = np.abs(float(SBERT_model.similarity(embeddings[0], embeddings[1])))
-    train_data.append([sentence_1, sentence_2, SBERT_similarity])
+    similarity = return_similarity(embeddings)
+    train_data.append([sentence_1, sentence_2, similarity])
 # Both Different
 for sentence_1 in sentences_to_add:
     ind = np.random.randint(0, len(it_sentences))
@@ -39,10 +45,8 @@ for sentence_1 in sentences_to_add:
     else:
         sentence_2 = cooking_sentences[ind]
     embeddings = SBERT_model.encode([sentence_1, sentence_2])
-    SBERT_similarity = np.abs(float(SBERT_model.similarity(embeddings[0], embeddings[1])))
-    if SBERT_similarity > 1:  # Sometimes > 1 due to floating point errors
-        SBERT_similarity = 1.0
-    train_data.append([sentence_1, sentence_2, SBERT_similarity])
+    similarity = return_similarity(embeddings)
+    train_data.append([sentence_1, sentence_2, similarity])
 
 ### VALIDATION DATA ###
 # Both same
@@ -54,8 +58,8 @@ for sentence_1 in val_sentences:
     else:
         sentence_2 = cooking_sentences[ind]
     embeddings = SBERT_model.encode([sentence_1, sentence_2])
-    SBERT_similarity = np.abs(float(SBERT_model.similarity(embeddings[0], embeddings[1])))
-    val_data.append([sentence_1, sentence_2, SBERT_similarity])
+    similarity = return_similarity(embeddings)
+    val_data.append([sentence_1, sentence_2, similarity])
 # Both Different
 for sentence_1 in val_sentences:
     ind = np.random.randint(0, len(it_sentences))
@@ -64,10 +68,8 @@ for sentence_1 in val_sentences:
     else:
         sentence_2 = cooking_sentences[ind]
     embeddings = SBERT_model.encode([sentence_1, sentence_2])
-    SBERT_similarity = np.abs(float(SBERT_model.similarity(embeddings[0], embeddings[1])))
-    if SBERT_similarity > 1:
-        SBERT_similarity = 1.0
-    val_data.append([sentence_1, sentence_2, SBERT_similarity])
+    similarity = return_similarity(embeddings)
+    val_data.append([sentence_1, sentence_2, similarity])
 
 # Save to File
 np.savetxt("data/train_data.csv",train_data, delimiter=",",  fmt="%s", header="sentence_1,sentence_2,label", comments="")
