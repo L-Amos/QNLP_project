@@ -29,6 +29,7 @@ Whenever this project is worked on, I write my thoughts and findings in a develo
 <summary><h3  style="display:inline-block">January</h3></summary>
 
 - [Day 13](./january/25_01_15.md)
+- [Day 14](./january/25_01_29.md)
 </details>
 
 ## Progress Reports
