@@ -6,3 +6,4 @@ fidelity_model/fidelity_timing.ipynb
 gpu.py
 Journal/
 */bbc_data
+fidelity_model/data/*
