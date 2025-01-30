@@ -18,7 +18,7 @@ from lambeq.backend.quantum import Diagram as Circuit
 from lambeq.backend.tensor import Diagram
 from lambeq.training.quantum_model import QuantumModel
 
-from lambeq import BobcatParser, RemoveCupsRewriter, IQPAnsatz, AtomicType
+from lambeq import BobcatParser, RemoveCupsRewriter, StronglyEntanglingAnsatz, AtomicType
 from lambeq.backend.quantum import Diagram
 from lambeq.training.quantum_model import QuantumModel
 from lambeq.backend.converters.tk import from_tk
@@ -36,7 +36,7 @@ def fidelity_pqc_gen(sentence_1, sentence_2):
     remove_cups = RemoveCupsRewriter()
     sentence_1_diagram = remove_cups(parser.sentence2diagram(sentence_1))
     sentence_2_diagram = remove_cups(parser.sentence2diagram(sentence_2))
-    ansatz = IQPAnsatz({AtomicType.NOUN: 1, AtomicType.SENTENCE: 1}, n_layers=1, n_single_qubit_params=3)
+    ansatz = StronglyEntanglingAnsatz({AtomicType.NOUN: 1, AtomicType.SENTENCE: 1}, n_layers=1, n_single_qubit_params=3)
     iqp = ansatz(sentence_1_diagram @ sentence_2_diagram)
     control = Ket(0) >> H
     fidelity_pqc =  iqp @ control
