@@ -50,19 +50,18 @@ def training(model, train_dataset, val_dataset, param_vals, epochs, seed, c):
         train_costs = np.empty((5, epochs))
         val_costs = np.empty((5, epochs))
         for i in range(5):
-            error = False
-            while not error:
+            error = True
+            while error:
                 print(f"RUN {i+1}/5")
                 model.load('my_checkpoint.lt')
                 # Parse Train Data
                 try:
                     trainer.fit(train_dataset, val_dataset, log_interval=12)
-                except Exception as e:
+                except PermissionError as e:  # If there's an error with permissions, try training again
                     with open("error_log", "a") as f:
                         f.write(str(e))
-                    error = True
                 else:
-                    break
+                    error=False
             # Store costs
             train_costs[i] = trainer.train_epoch_costs[i*epochs:(i+1)*epochs]
             val_costs[i] = trainer.val_costs[i*epochs:(i+1)*epochs]
