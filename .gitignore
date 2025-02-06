@@ -1,7 +1,9 @@
 */__pycache__
-# Ignoring 
+# Ignoring Lambeq sys files
 */runs
 *.lt
+# Ignoring logs
+*.log
 # Ignoring legacy code
 fidelity_model/fidelity_accuracy_evaluator.py
 fidelity_model/fidelity_timing.ipynb
