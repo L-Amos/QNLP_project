@@ -58,7 +58,7 @@ def training(model, train_dataset, val_dataset, param_vals, epochs, seed, c):
                 try:
                     trainer.fit(train_dataset, val_dataset, log_interval=12)
                 except PermissionError as e:  # If there's an error with permissions, try training again
-                    with open("error_log", "a") as f:
+                    with open("error.log", "a") as f:
                         f.write(str(e))
                 else:
                     error=False
