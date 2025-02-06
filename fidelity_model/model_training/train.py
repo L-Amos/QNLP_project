@@ -32,7 +32,7 @@ def user_setup():
     param_step = float(input("Enter the step size between training parameters.\n"))
     epochs = int(input("Enter the number of training epochs\n"))
     batch_size = int(input("Enter the batch size\n"))
-    return np.arange(param_start, param_end+param_step, param_step), epochs, batch_size
+    return np.arange(param_start, param_end+param_step/2, param_step), epochs, batch_size
 
 def training(model, train_dataset, val_dataset, param_vals, epochs, seed, c):
     print("TRAINING\n" + "="*len("TRAINING"))
