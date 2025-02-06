@@ -50,10 +50,19 @@ def training(model, train_dataset, val_dataset, param_vals, epochs, seed, c):
         train_costs = np.empty((5, epochs))
         val_costs = np.empty((5, epochs))
         for i in range(5):
-            print(f"RUN {i+1}/5")
-            model.load('my_checkpoint.lt')
-            # Parse Train Data
-            trainer.fit(train_dataset, val_dataset, log_interval=12)
+            error = False
+            while not error:
+                print(f"RUN {i+1}/5")
+                model.load('my_checkpoint.lt')
+                # Parse Train Data
+                try:
+                    trainer.fit(train_dataset, val_dataset, log_interval=12)
+                except Exception as e:
+                    with open("error_log", "a") as f:
+                        f.write(str(e))
+                    error = True
+                else:
+                    break
             # Store costs
             train_costs[i] = trainer.train_epoch_costs[i*epochs:(i+1)*epochs]
             val_costs[i] = trainer.val_costs[i*epochs:(i+1)*epochs]
@@ -68,12 +77,7 @@ def main():
     PARAMS, EPOCHS, BATCH_SIZE = user_setup()
     print("SETTING UP\n" + "="*len("SETTING UP"))
     train_pairs, train_labels = read_file("data/train_data.csv", "Train Data")
-    val_pairs, val_labels = read_file("data/val_data.csv", "Val Data")#
-    # Just for quick testing
-    train_pairs = train_pairs[:10]
-    val_pairs = val_pairs[:10]
-    train_labels = train_labels[:10]
-    val_labels = val_labels[:10]
+    val_pairs, val_labels = read_file("data/val_data.csv", "Val Data")
     train_circuits = generate_circuits(train_pairs, "Generating Train Circuits")
     val_circuits = generate_circuits(val_pairs, "Generating Val Circuits")
     train_dataset = create_dataset(train_circuits, train_labels, BATCH_SIZE, "Train Dataset")
