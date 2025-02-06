@@ -12,3 +12,10 @@ My model is built on [lambeq's quantum model](https://github.com/CQCL/lambeq/blo
 When training, each sentence in the pair is converted to a DisCoCat diagram. The two diagrams are then composed together, and a parameterised quantum circuit (PQC) is created from this composed diagram. The model takes this PQC, adds a [swap test](https://docs.classiq.io/latest/explore/algorithms/swap_test/swap_test/) and runs the circuit using the numpy and tensornetwork simulator. After post-selecting the results, the model then calculates and returns the fidelity. This can be done for a single sentence pair or an array of pairs.
 
 During training, the loss is taken to be the mean squared error between the returned fidelities and the train labels.
+
+## Train Procedure
+1. Read the train and validation data from CSV files.
+2. Generate PQCs for each piece of data.
+3. Load the PQCs into an empty model.
+4. Use lambeq to train the model 5 times, resetting the model to its untrained state before each training run.
+5. Record the average train and validation costs (with the cost function being the MSE) in CSV files.
