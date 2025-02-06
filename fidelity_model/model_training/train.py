@@ -1,5 +1,6 @@
 import sys
 sys.path.append("../")  # Setting path so that imports can happen
+import os
 from lambeq import QuantumTrainer, SPSAOptimizer, Dataset
 import numpy as np
 import pandas as pd
@@ -67,8 +68,11 @@ def training(model, train_dataset, val_dataset, param_vals, epochs, seed, c):
             val_costs[i] = trainer.val_costs[i*epochs:(i+1)*epochs]
             print("")  # Separates the training outputs
         # Save averages
-        np.savetxt(f"data/FINAL_TEST/a-{a}_train_costs.csv", np.mean(train_costs, axis=0), delimiter=',')
-        np.savetxt(f"data/a-{a}_val_costs.csv", np.mean(val_costs, axis=0), delimiter=',')
+        path = f"data/{epochs}-EPOCHS"
+        if not os.path.exists(path):
+            os.mkdir(path)
+        np.savetxt(f"{path}/a-{a}_train_costs.csv", np.mean(train_costs, axis=0), delimiter=',')
+        np.savetxt(f"{path}/a-{a}_val_costs.csv", np.mean(val_costs, axis=0), delimiter=',')
 
 def main():
     SEED = 2
