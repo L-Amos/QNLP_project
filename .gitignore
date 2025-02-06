@@ -1,9 +1,18 @@
-/runs
-*/runs
 */__pycache__
+# Ignoring 
+*/runs
+*.lt
+# Ignoring legacy code
 fidelity_model/fidelity_accuracy_evaluator.py
 fidelity_model/fidelity_timing.ipynb
 gpu.py
-Journal/
+fidelity_model/data_old
+# Ignoring BBC side project
 */bbc_data
+# Ignoring all gathered data from training, but not the training/validation sentences and pairs themselves
 fidelity_model/data/*
+!fidelity_model/data/*.csv
+!fidelity_model/data/*.txt
+# Ignoring testing scripts
+testing.ipynb
+plotter.ipynb
