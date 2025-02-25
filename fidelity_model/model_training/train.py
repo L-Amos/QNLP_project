@@ -7,6 +7,12 @@ import pandas as pd
 from tqdm import tqdm
 from fidelity_model import FidelityModel, fidelity_pqc_gen
 
+
+LANGUAGE_MODELS = {
+    1: "DisCoCat",
+    2: "BagOfWords"
+}
+
 def read_file(path, displayname=""):
     print(f"Reading {displayname}...", end="")
     csvfile = pd.read_csv(path)
@@ -15,10 +21,10 @@ def read_file(path, displayname=""):
     print("Done")
     return pairs, labels
 
-def generate_circuits(pairs, description="Generating Circuits"):
+def generate_circuits(pairs, language_model, description="Generating Circuits"):
     progress_bar = tqdm(pairs, bar_format="{desc}{percentage:3.0f}%|{bar:25}{r_bar}")
     progress_bar.set_description(description)
-    circuits = [fidelity_pqc_gen(sentence_1, sentence_2) for sentence_1, sentence_2 in progress_bar]
+    circuits = [fidelity_pqc_gen(sentence_1, sentence_2, language_model) for sentence_1, sentence_2 in progress_bar]
     return circuits
 
 def create_dataset(circuits, labels, batch_size, displayname=""):
@@ -33,9 +39,11 @@ def user_setup():
     param_step = float(input("Enter the step size between training parameters.\n"))
     epochs = int(input("Enter the number of training epochs\n"))
     batch_size = int(input("Enter the batch size\n"))
-    return np.arange(param_start, param_end+param_step/2, param_step), epochs, batch_size
+    alt_flag = int(input("Similarity [0] or alternative [1] labels?\n"))
+    language_model = int(input("Which language model?\n1.\tDisCoCat\n2.\tBag of Words\n"))
+    return np.arange(param_start, param_end+param_step/2, param_step), epochs, batch_size, alt_flag, language_model
 
-def training(model, train_dataset, val_dataset, param_vals, epochs, seed, c):
+def training(model, train_dataset, val_dataset, param_vals, epochs, seed, c, language_model):
     print("TRAINING\n" + "="*len("TRAINING"))
     for a in param_vals:
         print(f"Learning Rate: {a}\n" + "-"*len(f"Learning Rate: {a}"))
@@ -71,23 +79,23 @@ def training(model, train_dataset, val_dataset, param_vals, epochs, seed, c):
         path = f"data/{epochs}-EPOCHS"
         if not os.path.exists(path):
             os.mkdir(path)
-        np.savetxt(f"{path}/a-{a}_train_costs.csv", np.mean(train_costs, axis=0), delimiter=',')
-        np.savetxt(f"{path}/a-{a}_val_costs.csv", np.mean(val_costs, axis=0), delimiter=',')
+        np.savetxt(f"{path}/a-{a}_{LANGUAGE_MODELS[language_model]}_train_costs.csv", np.mean(train_costs, axis=0), delimiter=',')
+        np.savetxt(f"{path}/a-{a}_{LANGUAGE_MODELS[language_model]}_val_costs.csv", np.mean(val_costs, axis=0), delimiter=',')
 
 def main():
     SEED = 2
     C = 0.06
-    PARAMS, EPOCHS, BATCH_SIZE = user_setup()
+    PARAMS, EPOCHS, BATCH_SIZE, ALT_FLAG, LANGUAGE_MODEL = user_setup()
     print("SETTING UP\n" + "="*len("SETTING UP"))
-    train_pairs, train_labels = read_file("data/train_data.csv", "Train Data")
-    val_pairs, val_labels = read_file("data/val_data.csv", "Val Data")
-    train_circuits = generate_circuits(train_pairs, "Generating Train Circuits")
-    val_circuits = generate_circuits(val_pairs, "Generating Val Circuits")
+    train_pairs, train_labels = read_file(f"data/train_data{"_alt"*ALT_FLAG}.csv", "Train Data")
+    val_pairs, val_labels = read_file(f"data/val_data{"_alt"*ALT_FLAG}.csv", "Val Data")
+    train_circuits = generate_circuits(train_pairs, LANGUAGE_MODEL, "Generating Train Circuits")
+    val_circuits = generate_circuits(val_pairs, LANGUAGE_MODEL, "Generating Val Circuits")
     train_dataset = create_dataset(train_circuits, train_labels, BATCH_SIZE, "Train Dataset")
     val_dataset = create_dataset(val_circuits, val_labels, BATCH_SIZE, "Val Dataset")
     print("Generating Model...", end="")
     model = FidelityModel.from_diagrams(train_circuits+val_circuits, use_jit=True)
     print("Done")
-    training(model, train_dataset, val_dataset, PARAMS, EPOCHS, SEED, C)
+    training(model, train_dataset, val_dataset, PARAMS, EPOCHS, SEED, C, LANGUAGE_MODEL)
 
 main()

@@ -18,7 +18,7 @@ from lambeq.backend.quantum import Diagram as Circuit
 from lambeq.backend.tensor import Diagram
 from lambeq.training.quantum_model import QuantumModel
 
-from lambeq import BobcatParser, RemoveCupsRewriter, StronglyEntanglingAnsatz, AtomicType
+from lambeq import BobcatParser, RemoveCupsRewriter, StronglyEntanglingAnsatz, AtomicType, bag_of_words_reader
 from lambeq.backend.quantum import Diagram
 from lambeq.training.quantum_model import QuantumModel
 from lambeq.backend.converters.tk import from_tk
@@ -30,12 +30,16 @@ from qiskit_aer import AerSimulator
 
 from lambeq.backend.quantum import Ket, H, CX, Controlled, X, Id, Measure, Discard
 
-def fidelity_pqc_gen(sentence_1, sentence_2):
+def fidelity_pqc_gen(sentence_1, sentence_2, language_model):
     # # Turn into PQCs using DisCoCat
-    parser = BobcatParser()
-    remove_cups = RemoveCupsRewriter()
-    sentence_1_diagram = remove_cups(parser.sentence2diagram(sentence_1))
-    sentence_2_diagram = remove_cups(parser.sentence2diagram(sentence_2))
+    if (language_model==1):
+        parser = BobcatParser()
+        remove_cups = RemoveCupsRewriter()
+        sentence_1_diagram = remove_cups(parser.sentence2diagram(sentence_1))
+        sentence_2_diagram = remove_cups(parser.sentence2diagram(sentence_2))
+    elif (language_model==2):
+        sentence_1_diagram = bag_of_words_reader.sentence2diagram(sentence_1)
+        sentence_2_diagram = bag_of_words_reader.sentence2diagram(sentence_2)
     ansatz = StronglyEntanglingAnsatz({AtomicType.NOUN: 1, AtomicType.SENTENCE: 1}, n_layers=1, n_single_qubit_params=3)
     iqp = ansatz(sentence_1_diagram @ sentence_2_diagram)
     control = Ket(0) >> H
