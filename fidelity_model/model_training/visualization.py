@@ -3,7 +3,7 @@ sys.path.append("../")
 from fidelity_model import FidelityModel
 import pandas as pd
 from tqdm import tqdm
-from lambeq import BobcatParser, RemoveCupsRewriter, StronglyEntanglingAnsatz, AtomicType, bag_of_words_reader
+from lambeq import BobcatParser, RemoveCupsRewriter, StronglyEntanglingAnsatz, AtomicType, bag_of_words_reader, word_sequence_reader
 import tensornetwork as tn
 from qutip import Bloch, Qobj
 
@@ -23,8 +23,10 @@ def sentence_pqc_gen(sentence, language_model):
         parser = BobcatParser()
         remove_cups = RemoveCupsRewriter()
         sentence_diagram = remove_cups(parser.sentence2diagram(sentence))
-    else:
+    elif language_model==2:
         sentence_diagram =bag_of_words_reader.sentence2diagram(sentence)
+    elif language_model==3:
+        sentence_diagram = word_sequence_reader.sentence2diagram(sentence)
     ansatz = StronglyEntanglingAnsatz({AtomicType.NOUN: 1, AtomicType.SENTENCE: 1}, n_layers=1, n_single_qubit_params=3)
     circ = ansatz(sentence_diagram)
     return circ

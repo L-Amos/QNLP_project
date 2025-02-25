@@ -10,7 +10,8 @@ from fidelity_model import FidelityModel, fidelity_pqc_gen
 
 LANGUAGE_MODELS = {
     1: "DisCoCat",
-    2: "BagOfWords"
+    2: "BagOfWords",
+    3: "WordSequence"
 }
 
 def read_file(path, displayname=""):
@@ -40,7 +41,7 @@ def user_setup():
     epochs = int(input("Enter the number of training epochs\n"))
     batch_size = int(input("Enter the batch size\n"))
     alt_flag = int(input("Similarity [0] or alternative [1] labels?\n"))
-    language_model = int(input("Which language model?\n1.\tDisCoCat\n2.\tBag of Words\n"))
+    language_model = int(input("Which language model?\n1.\tDisCoCat\n2.\tBag of Words\n3.\tWord-Sequence\n"))
     return np.arange(param_start, param_end+param_step/2, param_step), epochs, batch_size, alt_flag, language_model
 
 def training(model, train_dataset, val_dataset, param_vals, epochs, seed, c, language_model):
