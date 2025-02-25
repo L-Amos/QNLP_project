@@ -32,5 +32,11 @@ Whenever this project is worked on, I write my thoughts and findings in a develo
 - [Day 14](./january/25_01_29.md)
 </details>
 
+<summary><h3  style="display:inline-block">February</h3></summary>
+
+- [Day 15](./february/25_02_06.md)
+- [Day 16](./february/25_02_25.md)
+</details>
+
 ## Progress Reports
 [Progress Report 1 (29/10/24)](./SitRep-29-10-24.ipynb)
