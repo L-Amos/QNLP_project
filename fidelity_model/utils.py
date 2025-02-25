@@ -30,12 +30,11 @@ def sentence_pqc_gen(sentence, language_model):
     circ = ansatz(sentence_diagram)
     return circ
 
-def get_states(diags, model, description="Generating States"):
+def get_states(diags, description="Generating States"):
     results = []
     progress_bar = tqdm(diags,bar_format="{desc}{percentage:3.0f}%|{bar:25}{r_bar}")
     progress_bar.set_description(description)
     for d in progress_bar:
         result = tn.contractors.auto(*d.to_tn()).tensor
-        result = model._normalise_vector(result)
         results.append(result)
-    return results
+    return results/np.linalg.norm(results)

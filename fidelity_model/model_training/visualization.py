@@ -34,8 +34,8 @@ def main():
         food_diags = model._fast_subs(food_circuits, model.weights)
         print("Done")
         # Run Train Sentences Through Model
-        it_states = get_states(it_diags, model, description="Generating IT States")
-        food_states = get_states(food_diags, model, description="Generating Food States")
+        it_states = get_states(it_diags, description="Generating IT States")
+        food_states = get_states(food_diags, description="Generating Food States")
         # Plot States
         print("Plotting States...")
         b = Bloch()
