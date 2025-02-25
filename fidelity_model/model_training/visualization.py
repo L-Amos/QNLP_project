@@ -3,7 +3,7 @@ sys.path.append("../")
 from fidelity_model import FidelityModel
 import pandas as pd
 from tqdm import tqdm
-from lambeq import BobcatParser, RemoveCupsRewriter, StronglyEntanglingAnsatz, AtomicType
+from lambeq import BobcatParser, RemoveCupsRewriter, StronglyEntanglingAnsatz, AtomicType, bag_of_words_reader
 import tensornetwork as tn
 from qutip import Bloch, Qobj
 
@@ -17,11 +17,14 @@ def ingest(file_path):
     # Retrieve train sentences + parse
     return data
 
-def sentence_pqc_gen(sentence):
+def sentence_pqc_gen(sentence, language_model):
     # # Turn into PQCs using DisCoCat
-    parser = BobcatParser()
-    remove_cups = RemoveCupsRewriter()
-    sentence_diagram = remove_cups(parser.sentence2diagram(sentence))
+    if language_model==1:
+        parser = BobcatParser()
+        remove_cups = RemoveCupsRewriter()
+        sentence_diagram = remove_cups(parser.sentence2diagram(sentence))
+    else:
+        sentence_diagram =bag_of_words_reader.sentence2diagram(sentence)
     ansatz = StronglyEntanglingAnsatz({AtomicType.NOUN: 1, AtomicType.SENTENCE: 1}, n_layers=1, n_single_qubit_params=3)
     circ = ansatz(sentence_diagram)
     return circ
@@ -38,6 +41,7 @@ def get_states(diags, model, description="Generating States"):
 
 def main():
     # Load Model
+    LANGUAGE_MODEL = int(input("Which language model?\n1.\tDisCoCat\n2.\tBag of Words\n"))
     path = input("Enter path to model checkpoint\n")
     print("Loading Model...", end="")
     model = FidelityModel()
@@ -54,10 +58,10 @@ def main():
         # Create PQCs
         progress_bar = tqdm(it_sentences, bar_format="{desc}{percentage:3.0f}%|{bar:25}{r_bar}")
         progress_bar.set_description("Generating IT Circuits")
-        it_circuits = [sentence_pqc_gen(sentence) for sentence in progress_bar]
+        it_circuits = [sentence_pqc_gen(sentence, LANGUAGE_MODEL) for sentence in progress_bar]
         progress_bar = tqdm(food_sentences, bar_format="{desc}{percentage:3.0f}%|{bar:25}{r_bar}")
         progress_bar.set_description("Generating Food Circuits")
-        food_circuits = [sentence_pqc_gen(sentence) for sentence in progress_bar]
+        food_circuits = [sentence_pqc_gen(sentence, LANGUAGE_MODEL) for sentence in progress_bar]
         # Substitute Model Weights
         print("Subbing Model Weights...", end="")
         it_diags = model._fast_subs(it_circuits, model.weights)
