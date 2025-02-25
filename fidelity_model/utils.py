@@ -36,5 +36,5 @@ def get_states(diags, description="Generating States"):
     progress_bar.set_description(description)
     for d in progress_bar:
         result = tn.contractors.auto(*d.to_tn()).tensor
-        results.append(result)
-    return results/np.linalg.norm(results)
+        results.append(result/np.linalg.norm(result))
+    return results
