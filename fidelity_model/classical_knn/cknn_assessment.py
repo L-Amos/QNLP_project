@@ -7,6 +7,19 @@ import numpy as np
 from collections import Counter
 
 
+def get_sentence_states(sentences, model, language_model):
+    # Create PQCs
+    progress_bar = tqdm(sentences, bar_format="{desc}{percentage:3.0f}%|{bar:25}{r_bar}")
+    progress_bar.set_description("Generating Sentence Circuits")
+    circuits = [sentence_pqc_gen(sentence, language_model) for sentence in progress_bar]
+    # Substitute Model Weights
+    print("Subbing Model Weights...", end="")
+    diags = model._fast_subs(circuits, model.weights)
+    print("Done")
+    # Run Train Sentences Through Model
+    states = get_states(diags, description="Generating States")
+    return states
+
 def main():
     # Load Model
     LANGUAGE_MODEL = int(input("Which language model?\n1.\tDisCoCat\n2.\tBag of Words\n3.\tWord Sequence\n"))
@@ -15,47 +28,29 @@ def main():
     model = FidelityModel()
     model.load(path)   
     print("Done")
-    # Ingest Data
+    # Get train and test sentences and labels
     print("Ingesting Data...", end="")
-    data = ingest(f"../model_training/data/train_sentences.txt")
-    it_sentences = [key for key in list(data.keys()) if data[key]=='0']
-    food_sentences = [key for key in list(data.keys()) if data[key]=='1']
-    print("Done")
-    # Create PQCs
-    progress_bar = tqdm(it_sentences, bar_format="{desc}{percentage:3.0f}%|{bar:25}{r_bar}")
-    progress_bar.set_description("Generating IT Circuits")
-    it_circuits = [sentence_pqc_gen(sentence, LANGUAGE_MODEL) for sentence in progress_bar]
-    progress_bar = tqdm(food_sentences, bar_format="{desc}{percentage:3.0f}%|{bar:25}{r_bar}")
-    progress_bar.set_description("Generating Food Circuits")
-    food_circuits = [sentence_pqc_gen(sentence, LANGUAGE_MODEL) for sentence in progress_bar]
-    # Substitute Model Weights
-    print("Subbing Model Weights...", end="")
-    it_diags = model._fast_subs(it_circuits, model.weights)
-    food_diags = model._fast_subs(food_circuits, model.weights)
-    print("Done")
-    # Run Train Sentences Through Model
-    it_states = get_states(it_diags, description="Generating IT States")
-    food_states = get_states(food_diags, description="Generating Food States")
-    # Do the same for test sentences
-    test_data = ingest(f"../model_training/data/test_sentences.txt")
+    train_data = ingest("../model_training/data/train_sentences.txt")
+    train_sentences = train_data.keys()
+    test_data = ingest("../model_training/data/test_sentences.txt")
     test_sentences = test_data.keys()
-    progress_bar = tqdm(test_sentences, bar_format="{desc}{percentage:3.0f}%|{bar:25}{r_bar}")
-    progress_bar.set_description("Generating Test Circuits")
-    test_circuits = [sentence_pqc_gen(sentence, LANGUAGE_MODEL) for sentence in progress_bar]
-    test_diags = model._fast_subs(test_circuits, model.weights)
-    test_states = get_states(test_diags, description="Generating Test States")
+    print("Done")
+    # Get train and test sentece states
+    print("# TRAIN SENTENCES #")
+    train_states = get_sentence_states(train_sentences, model, LANGUAGE_MODEL)
+    print("# TEST SENTENCES #")
+    test_states = get_sentence_states(test_sentences, model, LANGUAGE_MODEL)    
     # Get k nearest neighbours
     K=5
     correct = 0
+    print("# MEASURING ACCURACY # ")
     progress_bar = tqdm(test_sentences, bar_format="{desc}{percentage:3.0f}%|{bar:25}{r_bar}")
     progress_bar.set_description("Classifying With KNN")
     for test_sentence, test_state in zip(progress_bar, test_states):
         fidelities = []
-        for state in it_states:
-            fidelities.append(['0', np.abs(test_state@state)**2])
-        for state in food_states:
-            fidelities.append(['1', np.abs(test_state@state)**2])
-        fidelities = np.array(fidelities)
+        for train_sentence, train_state in zip(train_sentences, train_states):
+            fidelities.append([train_data[train_sentence], np.abs(test_state@train_state)**2])  # Find fidelity between test and train state
+        fidelities = np.array(fidelities)  # Needed for argsort in next line
         sorted_fidelities = fidelities[fidelities[:, 1].argsort()]
         highest_fidelities = sorted_fidelities[-K:]
         highest_fidelity_labels = highest_fidelities[:,0]
