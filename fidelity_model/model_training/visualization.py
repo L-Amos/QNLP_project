@@ -7,7 +7,7 @@ from utils import ingest, get_states, sentence_pqc_gen
 
 def main():
     # Load Model
-    LANGUAGE_MODEL = int(input("Which language model?\n1.\tDisCoCat\n2.\tBag of Words\n"))
+    LANGUAGE_MODEL = int(input("Which language model?\n1.\tDisCoCat\n2.\tBag of Words\n3.\tWord Sequence\n"))
     path = input("Enter path to model checkpoint\n")
     print("Loading Model...", end="")
     model = FidelityModel()
