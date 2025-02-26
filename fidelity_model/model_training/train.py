@@ -40,10 +40,10 @@ def user_setup():
     param_step = float(input("Enter the step size between training parameters.\n"))
     epochs = int(input("Enter the number of training epochs\n"))
     batch_size = int(input("Enter the batch size\n"))
-    alt_flag = int(input("Similarity [0] or alternative [1] labels?\n"))
+    binary_flag = int(input("Similarity [0] or binary [1] labels?\n"))
     language_model = int(input("Which language model?\n1.\tDisCoCat\n2.\tBag of Words\n3.\tWord-Sequence\n"))
     training_runs = int(input("How many training runs?\n"))
-    return np.arange(param_start, param_end+param_step/2, param_step), epochs, batch_size, alt_flag, language_model, training_runs
+    return np.arange(param_start, param_end+param_step/2, param_step), epochs, batch_size, binary_flag, language_model, training_runs
 
 def training(model, train_dataset, val_dataset, param_vals, epochs, seed, c, language_model, runs):
     print("TRAINING\n" + "="*len("TRAINING"))
@@ -86,10 +86,10 @@ def training(model, train_dataset, val_dataset, param_vals, epochs, seed, c, lan
 def main():
     SEED = 2
     C = 0.06
-    PARAMS, EPOCHS, BATCH_SIZE, ALT_FLAG, LANGUAGE_MODEL, TRAINING_RUNS = user_setup()
+    PARAMS, EPOCHS, BATCH_SIZE, BINARY_FLAG, LANGUAGE_MODEL, TRAINING_RUNS = user_setup()
     print("SETTING UP\n" + "="*len("SETTING UP"))
-    train_pairs, train_labels = read_file(f"data/train_data{"_alt"*ALT_FLAG}.csv", "Train Data")
-    val_pairs, val_labels = read_file(f"data/val_data{"_alt"*ALT_FLAG}.csv", "Val Data")
+    train_pairs, train_labels = read_file(f"data/train_data{"_binary"*BINARY_FLAG}.csv", "Train Data")
+    val_pairs, val_labels = read_file(f"data/val_data{"_binary"*BINARY_FLAG}.csv", "Val Data")
     train_circuits = generate_circuits(train_pairs, LANGUAGE_MODEL, "Generating Train Circuits")
     val_circuits = generate_circuits(val_pairs, LANGUAGE_MODEL, "Generating Val Circuits")
     train_dataset = create_dataset(train_circuits, train_labels, BATCH_SIZE, "Train Dataset")

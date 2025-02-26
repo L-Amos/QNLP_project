@@ -26,9 +26,9 @@ VAL_PAIRS = 100
 for i in range(TEST_PAIRS):
     test_sentences = np.random.choice(list(all_sentences.keys()), size=2, replace=False)
     if np.all(np.isin(test_sentences, it_sentences)) or np.all(np.isin(test_sentences, cooking_sentences)):  # If both same category
-        similarity = 0.9
+        similarity = 1.0
     else:
-        similarity = 0.1
+        similarity = 0.0
     pair_data = [test_sentences[0], test_sentences[1], similarity]
     train_data.append(pair_data)
 
@@ -36,9 +36,9 @@ for i in range(TEST_PAIRS):
 for i in range(VAL_PAIRS):
     val_sentences = np.random.choice(list(all_sentences.keys()), size=2, replace=False)
     if np.all(np.isin(val_sentences, it_sentences)) or np.all(np.isin(val_sentences, cooking_sentences)):  # If both same category
-        similarity = 0.9
+        similarity = 1.0
     else:
-        similarity = 0.1
+        similarity = 0.0
     pair_data = [val_sentences[0], val_sentences[1], similarity]
     val_data.append(pair_data)
 
