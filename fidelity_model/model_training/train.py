@@ -42,9 +42,10 @@ def user_setup():
     batch_size = int(input("Enter the batch size\n"))
     alt_flag = int(input("Similarity [0] or alternative [1] labels?\n"))
     language_model = int(input("Which language model?\n1.\tDisCoCat\n2.\tBag of Words\n3.\tWord-Sequence\n"))
-    return np.arange(param_start, param_end+param_step/2, param_step), epochs, batch_size, alt_flag, language_model
+    training_runs = int(input("How many training runs?\n"))
+    return np.arange(param_start, param_end+param_step/2, param_step), epochs, batch_size, alt_flag, language_model, training_runs
 
-def training(model, train_dataset, val_dataset, param_vals, epochs, seed, c, language_model):
+def training(model, train_dataset, val_dataset, param_vals, epochs, seed, c, language_model, runs):
     print("TRAINING\n" + "="*len("TRAINING"))
     for a in param_vals:
         print(f"Learning Rate: {a}\n" + "-"*len(f"Learning Rate: {a}"))
@@ -57,12 +58,12 @@ def training(model, train_dataset, val_dataset, param_vals, epochs, seed, c, lan
             seed=seed
         )
         model.save('my_checkpoint.lt')  # Ensures we don't have to re-jit compile for every parameter
-        train_costs = np.empty((5, epochs))
-        val_costs = np.empty((5, epochs))
-        for i in range(5):
+        train_costs = np.empty((runs, epochs))
+        val_costs = np.empty((runs, epochs))
+        for i in range(runs):
             error = True
             while error:
-                print(f"RUN {i+1}/5")
+                print(f"RUN {i+1}/{runs}")
                 model.load('my_checkpoint.lt')
                 # Parse Train Data
                 try:
@@ -76,7 +77,6 @@ def training(model, train_dataset, val_dataset, param_vals, epochs, seed, c, lan
             train_costs[i] = trainer.train_epoch_costs[i*epochs:(i+1)*epochs]
             val_costs[i] = trainer.val_costs[i*epochs:(i+1)*epochs]
             print("")  # Separates the training outputs
-        # Save averages
         path = f"data/{epochs}-EPOCHS"
         if not os.path.exists(path):
             os.mkdir(path)
@@ -86,7 +86,7 @@ def training(model, train_dataset, val_dataset, param_vals, epochs, seed, c, lan
 def main():
     SEED = 2
     C = 0.06
-    PARAMS, EPOCHS, BATCH_SIZE, ALT_FLAG, LANGUAGE_MODEL = user_setup()
+    PARAMS, EPOCHS, BATCH_SIZE, ALT_FLAG, LANGUAGE_MODEL, TRAINING_RUNS = user_setup()
     print("SETTING UP\n" + "="*len("SETTING UP"))
     train_pairs, train_labels = read_file(f"data/train_data{"_alt"*ALT_FLAG}.csv", "Train Data")
     val_pairs, val_labels = read_file(f"data/val_data{"_alt"*ALT_FLAG}.csv", "Val Data")
@@ -97,6 +97,6 @@ def main():
     print("Generating Model...", end="")
     model = FidelityModel.from_diagrams(train_circuits+val_circuits, use_jit=True)
     print("Done")
-    training(model, train_dataset, val_dataset, PARAMS, EPOCHS, SEED, C, LANGUAGE_MODEL)
+    training(model, train_dataset, val_dataset, PARAMS, EPOCHS, SEED, C, LANGUAGE_MODEL, TRAINING_RUNS)
 
 main()
