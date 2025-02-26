@@ -77,11 +77,13 @@ def training(model, train_dataset, val_dataset, param_vals, epochs, seed, c, lan
             train_costs[i] = trainer.train_epoch_costs[i*epochs:(i+1)*epochs]
             val_costs[i] = trainer.val_costs[i*epochs:(i+1)*epochs]
             print("")  # Separates the training outputs
-        path = f"data/{epochs}-EPOCHS"
-        if not os.path.exists(path):
-            os.mkdir(path)
-        np.savetxt(f"{path}/a-{a}_{LANGUAGE_MODELS[language_model]}_train_costs.csv", np.mean(train_costs, axis=0), delimiter=',')
-        np.savetxt(f"{path}/a-{a}_{LANGUAGE_MODELS[language_model]}_val_costs.csv", np.mean(val_costs, axis=0), delimiter=',')
+        save_flag = input("Save? y/n\n")
+        if save_flag=="y":
+            path = f"data/{epochs}-EPOCHS"
+            if not os.path.exists(path):
+                os.mkdir(path)
+            np.savetxt(f"{path}/a-{a}_{LANGUAGE_MODELS[language_model]}_train_costs.csv", np.mean(train_costs, axis=0), delimiter=',')
+            np.savetxt(f"{path}/a-{a}_{LANGUAGE_MODELS[language_model]}_val_costs.csv", np.mean(val_costs, axis=0), delimiter=',')
 
 def main():
     SEED = 2
