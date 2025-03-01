@@ -12,6 +12,7 @@ fidelity_model/data_old
 # Ignoring BBC side project
 */bbc_data
 # Ignoring all gathered data from training, but not the training/validation sentences and pairs themselves
+fidelity_model/model_training/lambeq_model_training/data/*
 fidelity_model/model_training/data/*
 fidelity_model/model_training/runs/*
 fidelity_model/model_training/*/runs/*
