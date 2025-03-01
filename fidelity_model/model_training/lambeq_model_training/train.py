@@ -19,6 +19,7 @@ LANGUAGE_MODELS = {
 
 def main():
     LANGUAGE_MODEL = int(input("Which language model?\n1.\tDisCoCat\n2.\tBag of Words\n3.\tWord-Sequence\n"))
+    runs = int(input("How many training runs?\n"))
     # Ingest Data
     print("Ingesting...", end="")
     train_data = ingest("train_sentences.txt")
@@ -61,8 +62,28 @@ def main():
         batch_size=BATCH_SIZE
     )
     print("TRAINING")
-    trainer.fit(train_dataset, val_dataset, log_interval=12)
-    np.savetxt(f"data/{LANGUAGE_MODELS[LANGUAGE_MODEL]}_train_costs.csv", trainer.train_epoch_costs, delimiter=',')
-    np.savetxt(f"data/{LANGUAGE_MODELS[LANGUAGE_MODEL]}_val_costs.csv", trainer.val_costs, delimiter=',')
+    model.save('my_checkpoint.lt')
+    train_costs = np.empty((runs, EPOCHS))
+    val_costs = np.empty((runs, EPOCHS))
+    for i in range(runs):
+        error = True
+        while error:
+            print(f"RUN {i+1}/{runs}")
+            model.load('my_checkpoint.lt')
+            # Parse Train Data
+            try:
+                trainer.fit(train_dataset, val_dataset, log_interval=12)
+            except PermissionError as e:  # If there's an error with permissions, try training again
+                with open("error.log", "a") as f:
+                    f.write(str(e))
+            else:
+                error=False
+        # Store costs
+        train_costs[i] = trainer.train_epoch_costs[i*EPOCHS:(i+1)*EPOCHS]
+        val_costs[i] = trainer.val_costs[i*EPOCHS:(i+1)*EPOCHS]
+        print("")  # Separates the training outputs
+
+    np.savetxt(f"data/{LANGUAGE_MODELS[LANGUAGE_MODEL]}_train_costs.csv", np.mean(train_costs, axis=0), delimiter=',')
+    np.savetxt(f"data/{LANGUAGE_MODELS[LANGUAGE_MODEL]}_val_costs.csv", np.mean(val_costs, axis=0), delimiter=',')
 
 main()
