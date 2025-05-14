@@ -44,42 +44,12 @@ def fidelity_pqc_gen(sentence_1, sentence_2, language_model):
         sentence_1_diagram = word_sequence_reader.sentence2diagram(sentence_1)
         sentence_2_diagram = word_sequence_reader.sentence2diagram(sentence_2)
     ansatz = StronglyEntanglingAnsatz({AtomicType.NOUN: 1, AtomicType.SENTENCE: 1}, n_layers=1, n_single_qubit_params=3)
-    # Convert to tket
-    circ1 = ansatz(sentence_1_diagram).to_tk()
-    circ2 = ansatz(sentence_2_diagram).to_tk()
-    biggest_circ = circ1 if circ1.n_qubits > circ2.n_qubits else circ2
-    smallest_circ = circ2 if circ1.n_qubits > circ2.n_qubits else circ1
-    sentence_qubits = biggest_circ.qubits
-    # Get sentence qubits for biggest circuit
-    measured_qubits_1 = [command.qubits[0] for command in biggest_circ.get_commands() if 'Measure' in command.op.get_name()]
-    for qubit in measured_qubits_1:
-        sentence_qubits.remove(qubit)
-    biggest_circ.rename_units({sentence_qubits[0]: Qubit("sentence", 0)})
-    # Reset non-sentence qubits - can't use Reset operation as it is not unitary
-    biggest_circ.add_q_register("reset", len(measured_qubits_1))
-    for i,qubit in enumerate(measured_qubits_1):
-        biggest_circ.SWAP(qubit, Qubit("reset", i))
-    # Get sentence qubits for smallest circuit
-    sentence_qubits = smallest_circ.qubits
-    measured_qubits_2 = [command.qubits[0] for command in smallest_circ.get_commands() if 'Measure' in command.op.get_name() and command.args[0]]
-    for qubit in measured_qubits_2:
-        sentence_qubits.remove(qubit)
-    smallest_circ.rename_units({sentence_qubits[0]: Qubit("sentence", 1)})
-    # Compose circuits + add swap test
-    biggest_circ.add_qubit(Qubit("sentence", 1))
-    biggest_circ.append(smallest_circ)
-    biggest_circ.add_qubit(Qubit("control", 0))
-    sentence1 = Qubit("sentence", 0)
-    sentence2 = Qubit("sentence", 1)
-    control = Qubit("control", 0)
-    biggest_circ.H(control)
-    biggest_circ.CX(sentence2, sentence1)
-    biggest_circ.CCX(control, sentence1, sentence2)
-    biggest_circ.CX(sentence2, sentence1)
-    biggest_circ.H(control)
-    biggest_circ.Measure(control, biggest_circ.bits[0])
-    biggest_circ.flatten_registers()
-    return from_tk(biggest_circ)
+    iqp = ansatz(sentence_1_diagram @ sentence_2_diagram)
+    control = Ket(0) >> H
+    fidelity_pqc =  iqp @ control
+    CCX = Controlled(Controlled(X, distance=-1), distance=-1)
+    fidelity_pqc >>= CX @ Id(1) >> CCX >> CX @ Id(1) >> Discard() @ Discard() @ H  # Swap Test
+    return fidelity_pqc
 
 if TYPE_CHECKING:
     from jax import numpy as jnp
