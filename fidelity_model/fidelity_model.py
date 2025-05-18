@@ -6,54 +6,79 @@ Module based on a quantum backend, using `tket`.
 """
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, TYPE_CHECKING
 
-import numpy as np
+from collections.abc import Callable, Iterable
 
-from lambeq import BobcatParser, RemoveCupsRewriter, IQPAnsatz, AtomicType
-from lambeq.backend.quantum import Diagram
+import numpy
+from numpy.typing import ArrayLike
+
+from lambeq.backend import numerical_backend
+from lambeq.backend.quantum import Diagram as Circuit
+from lambeq.backend.tensor import Diagram
 from lambeq.training.quantum_model import QuantumModel
-from pytket.extensions.qiskit import tk_to_qiskit
-from pytket.circuit import OpType
-from pytket import Qubit, Bit
-from qiskit import transpile
-from qiskit_aer import AerSimulator
 
-
-
-def fidelity_pqc_gen(sentence_1, sentence_2):
-    # # Turn into PQCs using DisCoCat
-    parser = BobcatParser()
-    remove_cups = RemoveCupsRewriter()
-    sentence_1_diagram = remove_cups(parser.sentence2diagram(sentence_1))
-    sentence_2_diagram = remove_cups(parser.sentence2diagram(sentence_2))
-    ansatz = IQPAnsatz({AtomicType.NOUN: 1, AtomicType.SENTENCE: 1}, n_layers=1, n_single_qubit_params=3)
-    fidelity_pqc = ansatz(sentence_1_diagram @ sentence_2_diagram)
-    return fidelity_pqc
-
+if TYPE_CHECKING:
+    from jax import numpy as jnp
 class FidelityModel(QuantumModel):
-    """Model based on Lambeq' `TketModel` class. Built for sentence
-    fidelity testing to find semantic similarity. 
-    """
+    """A lambeq model for an exact classical simulation of a
+    quantum pipeline."""
 
-    def __init__(self, device="CPU") -> None:
-        """Initialise TketModel based on the `t|ket>` backend.
-
-        """
-        super().__init__()
-        self.rng = np.random.default_rng()
-        self.device = device
-
-    def _randint(self, low: int = -1 << 63, high: int = (1 << 63)-1) -> int:
-        return self.rng.integers(low, high, dtype=np.int64)
-
-    def get_diagram_output(self, diagrams: list[Diagram]) -> np.ndarray:
-        """Return the prediction for each diagram using t|ket>.
+    def __init__(self, use_jit: bool = False) -> None:
+        """Initialise an NumpyModel.
 
         Parameters
         ----------
-        diagrams : list of :py:class:`~lambeq.backend.quantum.Diagram
-            The :py:class:`Circuits <lambeq.backend.quantum.Diagram>`
+        use_jit : bool, default: False
+            Whether to use JAX's Just-In-Time compilation.
+
+        """
+        super().__init__()
+        self.use_jit = use_jit
+        self.lambdas: dict[Diagram, Callable[..., Any]] = {}
+
+    def _get_lambda(self, diagram: Diagram) -> Callable[[Any], Any]:
+        """Get lambda function that evaluates the provided diagram.
+
+        Raises
+        ------
+        ValueError
+            If `model.symbols` are not initialised.
+
+        """
+        from jax import jit, devices
+        import tensornetwork as tn
+
+        if not self.symbols:
+            raise ValueError('Symbols not initialised. Instantiate through '
+                             '`NumpyModel.from_diagrams()`.')
+        if diagram in self.lambdas:
+            return self.lambdas[diagram]
+
+        def diagram_output(x: Iterable[ArrayLike]) -> ArrayLike:
+            with (numerical_backend.backend('jax') as backend,
+                  tn.DefaultBackend('jax')):
+                sub_circuit = self._fast_subs([diagram], x)[0]
+                result = tn.contractors.auto(*sub_circuit.to_tn()).tensor
+                # square amplitudes to get probabilties for pure circuits
+                assert isinstance(sub_circuit, Circuit)
+                if not sub_circuit.is_mixed:
+                    print('NOT MIXED BITCH')
+                    result = backend.abs(result) ** 2
+                return self._normalise_vector(result)
+        self.lambdas[diagram] = jit(diagram_output, device=devices('cpu')[0])
+        return self.lambdas[diagram]
+
+    def get_diagram_output(
+        self,
+        diagrams: list[Diagram]
+    ) -> jnp.ndarray | numpy.ndarray:
+        """Return the exact prediction for each diagram.
+
+        Parameters
+        ----------
+        diagrams : list of :py:class:`~lambeq.tensor.Diagram`
+            The :py:class:`Circuits <lambeq.quantum.circuit.Circuit>`
             to be evaluated.
 
         Raises
@@ -67,53 +92,43 @@ class FidelityModel(QuantumModel):
             Resulting array.
 
         """
+        import tensornetwork as tn
+
         if len(self.weights) == 0 or not self.symbols:
             raise ValueError('Weights and/or symbols not initialised. '
                              'Instantiate through '
-                             '`TketModel.from_diagrams()` first, '
+                             '`NumpyModel.from_diagrams()` first, '
                              'then call `initialise_weights()`, or load '
                              'from pre-trained checkpoint.')
-        
 
-        
-        tk_circuits = self._fast_subs(diagrams, self.weights)
-        tk_circuits = [circuit.to_tk() for circuit in tk_circuits]
-        fidelities = []
-       
-        for circuit in tk_circuits:
-             # Add Swap Test
-            usable_counts = {}
-            fidelity_cbit = Bit("fidelity_meas", 0)
-            circuit.add_bit(fidelity_cbit)
-            control_qubit = Qubit("control", 0)
-            circuit.add_qubit(control_qubit)
-            circuit.add_barrier(circuit.qubits)  # Barrier between sentence PQCs and swap test
-            measured_qubits = [op.qubits[0] for op in circuit.commands_of_type(OpType.from_name('Measure'))]
-            cswap_qubits = [qubit for qubit in circuit.qubits if qubit not in measured_qubits]
-            circuit.H(control_qubit)
-            circuit.CSWAP(*cswap_qubits)
-            circuit.H(control_qubit)
-            circuit.Measure(control_qubit, fidelity_cbit)
-            qc = tk_to_qiskit(circuit)
-            # Measure Outcome
-            sim = AerSimulator(device=self.device)
-            if self.device=="GPU":
-                sim.set_options(precision='single')
-            transpiled_circ = transpile(qc, sim)
-            while not usable_counts.values():
-                job = sim.run(transpiled_circ, shots=2**17)
-                results = job.result()
-                # Post-selection
-                counts = results.get_counts()
-                try:
-                    usable_counts = {result[0]: counts[result] for result in counts if '1' not in result[1:]}
-                except ZeroDivisionError:
-                    usable_counts = {}
-            fidelity = usable_counts.get('0', 0)/sum(usable_counts.values()) - usable_counts.get('1', 0)/sum(usable_counts.values())
-            fidelities.append(fidelity)
-        return np.array(fidelities)
+        if self.use_jit:
+            from jax import numpy as jnp
 
-    def forward(self, x: list[Diagram]) -> np.ndarray:
+            lambdified_diagrams = [self._get_lambda(d) for d in diagrams]
+            if hasattr(self.weights, 'filled'):
+                self.weights = self.weights.filled()
+            res: jnp.ndarray = jnp.array([diag_f(self.weights)
+                                          for diag_f in lambdified_diagrams])
+            # Calculate Fidelity
+            probs = [jnp.diag(result) for result in res]
+            fidelities = [prob[0] - prob[1] for prob in probs]
+            return jnp.array(fidelities)
+
+        diagrams = self._fast_subs(diagrams, self.weights)
+        results = []
+        for d in diagrams:
+            assert isinstance(d, Circuit)
+            result = tn.contractors.auto(*d.to_tn()).tensor
+            # square amplitudes to get probabilties for pure circuits
+            if not d.is_mixed:
+                result = numpy.abs(result) ** 2
+            results.append(self._normalise_vector(result))
+            # Calculate Fidelity
+            probs = [numpy.diag(result) for result in results]
+            fidelities = [prob[0] - prob[1] for prob in probs]
+        return numpy.array(fidelities)
+
+    def forward(self, x: list[Diagram]) -> numpy.ndarray:
         """Perform default forward pass of a lambeq quantum model.
 
         In case of a different datapoint (e.g. list of tuple) or
