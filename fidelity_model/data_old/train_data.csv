@@ -1,0 +1,81 @@
+sentence_1,sentence_2,label
+woman prepares tasty meal .,woman cooks tasty meal .,0.9496045112609863
+skillful man bakes meal .,skillful woman prepares meal .,0.7539832293987274
+skillful person cooks sauce .,skillful person bakes dinner .,0.835523784160614
+woman prepares program .,woman debugs software .,0.7237424999475479
+skillful person bakes sauce .,skillful person prepares meal .,0.8199133574962616
+woman prepares tasty meal .,skillful woman bakes sauce .,0.8298378884792328
+skillful man cooks sauce .,woman prepares tasty meal .,0.6937600374221802
+man cooks tasty meal .,woman cooks tasty meal .,0.815631091594696
+man prepares useful software .,skillful man prepares program .,0.8539653718471527
+person prepares useful program .,man prepares useful software .,0.8626781702041626
+man cooks tasty meal .,woman bakes dinner .,0.6712232381105423
+skillful woman runs program .,skillful woman debugs program .,0.8242834508419037
+skillful person bakes meal .,woman cooks tasty dinner .,0.7495772540569305
+person debugs useful software .,woman debugs useful program .,0.8695885241031647
+man debugs program .,man prepares application .,0.6738387495279312
+man debugs useful application .,woman debugs software .,0.8589573800563812
+skillful woman bakes sauce .,woman cooks tasty dinner .,0.807933509349823
+woman debugs software .,man debugs useful software .,0.8867721855640411
+man cooks sauce .,woman prepares sauce .,0.8061999678611755
+person prepares tasty meal .,person bakes tasty sauce .,0.8361199498176575
+man prepares useful software .,skillful person debugs software .,0.7729978561401367
+person prepares software .,person debugs useful software .,0.7761025130748749
+person debugs useful software .,man prepares useful application .,0.707073524594307
+person runs program .,skillful woman prepares application .,0.6630526036024094
+woman runs program .,man debugs program .,0.6377205699682236
+skillful man debugs software .,skillful man debugs software .,1.0
+man cooks dinner .,skillful man cooks dinner .,0.9544627964496613
+woman cooks meal .,skillful person bakes sauce .,0.7275965362787247
+man debugs useful application .,skillful woman prepares application .,0.5838830918073654
+skillful man cooks sauce .,woman bakes tasty meal .,0.6410260051488876
+person debugs useful application .,person debugs useful software .,0.9782921671867371
+skillful woman prepares application .,man debugs useful program .,0.5698036029934883
+skillful person cooks sauce .,person bakes dinner .,0.7636581659317017
+man cooks sauce .,woman cooks tasty dinner .,0.6878585517406464
+woman bakes dinner .,skillful man cooks meal .,0.6643866002559662
+man cooks sauce .,woman prepares tasty meal .,0.6867155283689499
+skillful man debugs software .,man prepares application .,0.6657132804393768
+woman prepares program .,person runs useful application .,0.6563286036252975
+person cooks meal .,skillful man cooks sauce .,0.7866193950176239
+skillful woman bakes sauce .,woman cooks meal .,0.8237271904945374
+woman prepares tasty meal .,person prepares useful application .,0.5852949842810631
+skillful man bakes meal .,skillful woman debugs program .,0.5474371314048767
+skillful person cooks sauce .,man prepares application .,0.5927867367863655
+woman prepares program .,person cooks dinner .,0.5514545291662216
+skillful person bakes sauce .,man prepares useful application .,0.6028868332505226
+woman prepares tasty meal .,skillful man runs software .,0.5306911338120699
+skillful man cooks sauce .,woman runs program .,0.49676607735455036
+man cooks tasty meal .,man prepares application .,0.6265454590320587
+man prepares useful software .,person cooks meal .,0.5703452453017235
+person prepares useful program .,skillful person bakes meal .,0.6383553594350815
+man cooks tasty meal .,skillful woman runs program .,0.47924832068383694
+skillful woman runs program .,skillful man bakes dinner .,0.5516577325761318
+skillful person bakes meal .,woman runs useful application .,0.5933492556214333
+person debugs useful software .,skillful woman bakes meal .,0.5303665567189455
+man debugs program .,skillful man cooks meal .,0.5693929269909859
+man debugs useful application .,man prepares meal .,0.5555493012070656
+skillful woman bakes sauce .,man debugs useful application .,0.5216302797198296
+woman debugs software .,woman bakes dinner .,0.5867405608296394
+man cooks sauce .,woman runs program .,0.49602715438231826
+person prepares tasty meal .,man prepares software .,0.6525144726037979
+man prepares useful software .,skillful person prepares meal .,0.6704577803611755
+person prepares software .,man prepares dinner .,0.6589305400848389
+person debugs useful software .,woman bakes dinner .,0.4983711790991947
+person runs program .,man cooks dinner .,0.5476474463939667
+woman runs program .,woman bakes dinner .,0.6312840282917023
+skillful man debugs software .,skillful person bakes meal .,0.5768229067325592
+man cooks dinner .,woman debugs application .,0.47248218208551407
+woman cooks meal .,person runs useful program .,0.5117059107869864
+man debugs useful application .,skillful person cooks meal .,0.526373965665698
+skillful man cooks sauce .,man runs software .,0.6735524535179138
+person debugs useful application .,person cooks dinner .,0.5226880144327879
+skillful woman prepares application .,person bakes tasty sauce .,0.5855251327157021
+skillful person cooks sauce .,person runs software .,0.6449623703956604
+man cooks sauce .,man prepares useful application .,0.6388643085956573
+woman bakes dinner .,man prepares software .,0.45785103738307953
+man cooks sauce .,woman runs application .,0.4706126917153597
+skillful man debugs software .,skillful person cooks sauce .,0.6089781001210213
+woman prepares program .,skillful woman bakes sauce .,0.7036975175142288
+person cooks meal .,skillful man runs software .,0.5791500732302666
+skillful woman bakes sauce .,person runs application .,0.5331576839089394
