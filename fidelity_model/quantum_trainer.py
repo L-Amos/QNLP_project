@@ -33,7 +33,7 @@ from lambeq.training.quantum_model import QuantumModel
 from lambeq.training.trainer import EvalFuncT, EvalMode
 from lambeq.typing import StrPathT
 
-from trainer import Trainer  # Modified lambeq base trainer
+from fidelity_model.trainer import Trainer  # Modified lambeq base trainer
 
 class QuantumTrainer(Trainer):
     """A Trainer for the quantum pipeline."""
