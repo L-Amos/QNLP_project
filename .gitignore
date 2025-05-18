@@ -4,3 +4,5 @@
 *.lt
 # Ignoring logs
 *.log
+# Ignoring pip editable files
+*.egg-info
