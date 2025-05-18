@@ -2,10 +2,16 @@ from fidelity_model import FidelityModel
 import pandas as pd
 import numpy as np
 from tqdm import tqdm
-from lambeq import BobcatParser, RemoveCupsRewriter, StronglyEntanglingAnsatz, AtomicType, bag_of_words_reader, word_sequence_reader
+from lambeq import BobcatParser, RemoveCupsRewriter, StronglyEntanglingAnsatz, IQPAnsatz, AtomicType, bag_of_words_reader, word_sequence_reader
 import tensornetwork as tn
 from qutip import Bloch, Qobj
 from lambeq.backend.quantum import Ket, H, CX, Controlled, X, Id, Discard
+
+ANSATZE = {
+    0: StronglyEntanglingAnsatz({AtomicType.NOUN: 1, AtomicType.SENTENCE: 1}, n_layers=1, n_single_qubit_params=3),
+    1: IQPAnsatz({AtomicType.NOUN: 1, AtomicType.SENTENCE: 1}, n_layers=1, n_single_qubit_params=3)
+}
+
 
 def ingest(file_path, displayname=""):
     # Retrieve test sentences + parse
@@ -16,7 +22,7 @@ def ingest(file_path, displayname=""):
     print("Done")
     return pairs, labels
 
-def fidelity_pqc_gen(sentence_1, sentence_2, language_model):
+def fidelity_pqc_gen(sentence_1, sentence_2, language_model=1, ansatz=0):
     # # Turn into PQCs using DisCoCat
     if language_model==1:
         parser = BobcatParser()
@@ -29,7 +35,7 @@ def fidelity_pqc_gen(sentence_1, sentence_2, language_model):
     elif language_model==3:
         sentence_1_diagram = word_sequence_reader.sentence2diagram(sentence_1)
         sentence_2_diagram = word_sequence_reader.sentence2diagram(sentence_2)
-    ansatz = StronglyEntanglingAnsatz({AtomicType.NOUN: 1, AtomicType.SENTENCE: 1}, n_layers=1, n_single_qubit_params=3)
+    ansatz = ANSATZE[ansatz]
     iqp = ansatz(sentence_1_diagram @ sentence_2_diagram)
     control = Ket(0) >> H
     fidelity_pqc =  iqp @ control
