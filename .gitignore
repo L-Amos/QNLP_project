@@ -6,3 +6,5 @@
 *.log
 # Ignoring pip editable files
 *.egg-info
+# Ignoring test files
+plotter.ipynb
