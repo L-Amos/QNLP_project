@@ -42,6 +42,7 @@ Whenever this project is worked on, I write my thoughts and findings in a develo
 
 - [Day 17](./may/25_05_14.md)
 - [Day 18](./may/25_05_15.md)
+- [Day 19](./may/25_05_18.md)
 </details>
 
 ## Progress Reports
