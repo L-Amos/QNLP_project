@@ -1,12 +1,9 @@
-import sys
-sys.path.append("../../fidelity_model/")  # Setting path so that imports can happen
-import os
-from lambeq import QuantumTrainer, SPSAOptimizer, Dataset
+from lambeq import SPSAOptimizer, Dataset
 import numpy as np
-import pandas as pd
 from tqdm import tqdm
-from fidelity_model import FidelityModel
-from utils import fidelity_pqc_gen
+from fidelity_model.model import FidelityModel
+from fidelity_model.utils import fidelity_pqc_gen, ingest
+from fidelity_model.quantum_trainer import QuantumTrainer
 
 
 LANGUAGE_MODELS = {
@@ -18,18 +15,10 @@ LANGUAGE_MODELS = {
 SEED = 2
 BATCH_SIZE=30
 LANGUAGE_MODEL=1
-A = 0.5
+A = 1
 C = 0.06
-EPOCHS = 120
+EPOCHS = 240
 RUNS = 5
-
-def read_file(path, displayname=""):
-    print(f"Reading {displayname}...", end="")
-    csvfile = pd.read_csv(path)
-    pairs = [[pair['sentence_1'], pair['sentence_2']] for i,pair in csvfile.iterrows()]
-    labels = [pair['label'] for i,pair in csvfile.iterrows()]
-    print("Done")
-    return pairs, labels
 
 def generate_circuits(pairs, language_model, description="Generating Circuits"):
     progress_bar = tqdm(pairs, bar_format="{desc}{percentage:3.0f}%|{bar:25}{r_bar}")
@@ -84,8 +73,8 @@ def training(model, train_dataset, val_dataset):
 
 def main():
     print("SETTING UP\n" + "="*len("SETTING UP"))
-    train_pairs, train_labels = read_file("train_data_500.csv", "Train Data")
-    val_pairs, val_labels = read_file("val_data_100.csv", "Val Data")
+    train_pairs, train_labels = ingest("train_data_500.csv", "Train Data")
+    val_pairs, val_labels = ingest("val_data_100.csv", "Val Data")
     train_circuits = generate_circuits(train_pairs, LANGUAGE_MODEL, "Generating Train Circuits")
     val_circuits = generate_circuits(val_pairs, LANGUAGE_MODEL, "Generating Val Circuits")
     train_dataset = create_dataset(train_circuits, train_labels, BATCH_SIZE, "Train Dataset")
