@@ -781,7 +781,8 @@ class Trainer(ABC):
                 
                 # Calculate correlation
                 self.train_corr.append(np.corrcoef(self.model(train_dataset.data), train_dataset.targets)[0,1])
-                self.val_corr.append(np.corrcoef(self.model(val_dataset.data), val_dataset.targets)[0,1])
+                if val_dataset is not None:
+                    self.val_corr.append(np.corrcoef(self.model(val_dataset.data), val_dataset.targets)[0,1])
 
                 # save training stats checkpoint
                 self.save_checkpoint(
