@@ -32,17 +32,21 @@ Whenever this project is worked on, I write my thoughts and findings in a develo
 - [Day 14](./january/25_01_29.md)
 </details>
 
+<details>
 <summary><h3  style="display:inline-block">February</h3></summary>
 
 - [Day 15](./february/25_02_06.md)
 - [Day 16](./february/25_02_25.md)
+
 </details>
 
+<details>
 <summary><h3  style="display:inline-block">May</h3></summary>
 
 - [Day 17](./may/25_05_14.md)
 - [Day 18](./may/25_05_15.md)
 - [Day 19](./may/25_05_18.md)
+
 </details>
 
 ## Progress Reports
