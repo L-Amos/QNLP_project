@@ -1,0 +1,37 @@
+[project]
+name = "fidelity_model"
+authors = [
+    {name = "Luke Amos"},
+]
+version = "0.0.1"
+description = "An extension of the Lambeq package which uses qubit fidelity for quantum natural language processing (QNLP)."
+readme = "README.md"
+requires-python = ">=3.10.0"
+license = {text = "Academic/Educational Use Only"}
+dependencies = [
+    "numpy",
+    "pandas",
+    "lambeq==0.4.3",
+    "tqdm",
+    "jax",
+    "tensornetwork"
+]
+
+[project.scripts]
+
+[project.optional-dependencies]
+
+[build-system]
+requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra -q"
+testpaths = [
+]
