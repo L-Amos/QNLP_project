@@ -128,7 +128,7 @@ class FidelityModel(QuantumModel):
             fidelities = [prob[0] - prob[1] for prob in probs]
         return numpy.array(fidelities)
 
-    def forward(self, x: list[Diagram]) -> np.ndarray:
+    def forward(self, x: list[Diagram]) -> numpy.ndarray:
         """Perform default forward pass of a lambeq quantum model.
 
         In case of a different datapoint (e.g. list of tuple) or
