@@ -36,7 +36,7 @@ for i in range(TEST_PAIRS):
     train_sentences = np.random.choice(list(all_sentences.keys()), size=2, replace=False)
     train_embeddings = SBERT_model.encode(train_sentences, normalize_embeddings=True)
     # SBERT Similarity
-    similarity = return_similarity(train_embeddings)
+    similarity = round(return_similarity(train_embeddings), 2)
     pair_data = [train_sentences[0], train_sentences[1], similarity]
     train_data.append(pair_data)
     # Binary Similarity
@@ -52,7 +52,7 @@ for i in range(VAL_PAIRS):
     val_sentences = np.random.choice(list(all_sentences.keys()), size=2, replace=False)
     val_embeddings = SBERT_model.encode(train_sentences, normalize_embeddings=True)
     # SBERT Similarity
-    similarity = return_similarity(val_embeddings)
+    similarity = round(return_similarity(val_embeddings), 2)
     pair_data = [val_sentences[0], val_sentences[1], similarity]
     val_data.append(pair_data)
     # Binary Similarity
