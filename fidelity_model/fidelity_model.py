@@ -18,18 +18,6 @@ from lambeq.backend.quantum import Diagram as Circuit
 from lambeq.backend.tensor import Diagram
 from lambeq.training.quantum_model import QuantumModel
 
-from lambeq import BobcatParser, RemoveCupsRewriter, StronglyEntanglingAnsatz, AtomicType, bag_of_words_reader, word_sequence_reader
-from lambeq.backend.quantum import Diagram
-from lambeq.training.quantum_model import QuantumModel
-from lambeq.backend.converters.tk import from_tk
-from pytket.extensions.qiskit import tk_to_qiskit
-from pytket.circuit import OpType
-from pytket import Qubit, Bit
-from qiskit import transpile
-from qiskit_aer import AerSimulator
-
-from lambeq.backend.quantum import Ket, H, CX, Controlled, X, Id, Measure, Discard
-
 if TYPE_CHECKING:
     from jax import numpy as jnp
 class FidelityModel(QuantumModel):
