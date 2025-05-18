@@ -7,15 +7,14 @@ import tensornetwork as tn
 from qutip import Bloch, Qobj
 from lambeq.backend.quantum import Ket, H, CX, Controlled, X, Id, Discard
 
-def ingest(file_path):
+def ingest(file_path, displayname=""):
     # Retrieve test sentences + parse
-    with open(file_path, "r", encoding="utf8") as f:
-        sentences_raw = f.readlines()
-    sentences = [sentence[3:].replace('\n', '') for sentence in sentences_raw]
-    labels = [sentence[0] for sentence in sentences_raw]
-    data = {sentence: label for sentence, label in zip(sentences, labels)}
-    # Retrieve train sentences + parse
-    return data
+    print(f"Reading {displayname}...", end="")
+    csvfile = pd.read_csv(file_path)
+    pairs = [[pair['sentence_1'], pair['sentence_2']] for i,pair in csvfile.iterrows()]
+    labels = [pair['label'] for i,pair in csvfile.iterrows()]
+    print("Done")
+    return pairs, labels
 
 def fidelity_pqc_gen(sentence_1, sentence_2, language_model):
     # # Turn into PQCs using DisCoCat
