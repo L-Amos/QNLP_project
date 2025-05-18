@@ -30,27 +30,6 @@ from qiskit_aer import AerSimulator
 
 from lambeq.backend.quantum import Ket, H, CX, Controlled, X, Id, Measure, Discard
 
-def fidelity_pqc_gen(sentence_1, sentence_2, language_model):
-    # # Turn into PQCs using DisCoCat
-    if language_model==1:
-        parser = BobcatParser()
-        remove_cups = RemoveCupsRewriter()
-        sentence_1_diagram = remove_cups(parser.sentence2diagram(sentence_1))
-        sentence_2_diagram = remove_cups(parser.sentence2diagram(sentence_2))
-    elif language_model==2:
-        sentence_1_diagram = bag_of_words_reader.sentence2diagram(sentence_1)
-        sentence_2_diagram = bag_of_words_reader.sentence2diagram(sentence_2)
-    elif language_model==3:
-        sentence_1_diagram = word_sequence_reader.sentence2diagram(sentence_1)
-        sentence_2_diagram = word_sequence_reader.sentence2diagram(sentence_2)
-    ansatz = StronglyEntanglingAnsatz({AtomicType.NOUN: 1, AtomicType.SENTENCE: 1}, n_layers=1, n_single_qubit_params=3)
-    iqp = ansatz(sentence_1_diagram @ sentence_2_diagram)
-    control = Ket(0) >> H
-    fidelity_pqc =  iqp @ control
-    CCX = Controlled(Controlled(X, distance=-1), distance=-1)
-    fidelity_pqc >>= CX @ Id(1) >> CCX >> CX @ Id(1) >> Discard() @ Discard() @ H  # Swap Test
-    return fidelity_pqc
-
 if TYPE_CHECKING:
     from jax import numpy as jnp
 class FidelityModel(QuantumModel):
@@ -142,6 +121,7 @@ class FidelityModel(QuantumModel):
                 self.weights = self.weights.filled()
             res: jnp.ndarray = jnp.array([diag_f(self.weights)
                                           for diag_f in lambdified_diagrams])
+            # Calculate Fidelity
             probs = [jnp.diag(result) for result in res]
             fidelities = [prob[0] - prob[1] for prob in probs]
             return jnp.array(fidelities)

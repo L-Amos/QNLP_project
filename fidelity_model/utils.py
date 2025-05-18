@@ -5,6 +5,7 @@ from tqdm import tqdm
 from lambeq import BobcatParser, RemoveCupsRewriter, StronglyEntanglingAnsatz, AtomicType, bag_of_words_reader, word_sequence_reader
 import tensornetwork as tn
 from qutip import Bloch, Qobj
+from lambeq.backend.quantum import Ket, H, CX, Controlled, X, Id, Discard
 
 def ingest(file_path):
     # Retrieve test sentences + parse
@@ -16,19 +17,26 @@ def ingest(file_path):
     # Retrieve train sentences + parse
     return data
 
-def sentence_pqc_gen(sentence, language_model):
+def fidelity_pqc_gen(sentence_1, sentence_2, language_model):
     # # Turn into PQCs using DisCoCat
     if language_model==1:
         parser = BobcatParser()
         remove_cups = RemoveCupsRewriter()
-        sentence_diagram = remove_cups(parser.sentence2diagram(sentence))
+        sentence_1_diagram = remove_cups(parser.sentence2diagram(sentence_1))
+        sentence_2_diagram = remove_cups(parser.sentence2diagram(sentence_2))
     elif language_model==2:
-        sentence_diagram =bag_of_words_reader.sentence2diagram(sentence)
+        sentence_1_diagram = bag_of_words_reader.sentence2diagram(sentence_1)
+        sentence_2_diagram = bag_of_words_reader.sentence2diagram(sentence_2)
     elif language_model==3:
-        sentence_diagram = word_sequence_reader.sentence2diagram(sentence)
+        sentence_1_diagram = word_sequence_reader.sentence2diagram(sentence_1)
+        sentence_2_diagram = word_sequence_reader.sentence2diagram(sentence_2)
     ansatz = StronglyEntanglingAnsatz({AtomicType.NOUN: 1, AtomicType.SENTENCE: 1}, n_layers=1, n_single_qubit_params=3)
-    circ = ansatz(sentence_diagram)
-    return circ
+    iqp = ansatz(sentence_1_diagram @ sentence_2_diagram)
+    control = Ket(0) >> H
+    fidelity_pqc =  iqp @ control
+    CCX = Controlled(Controlled(X, distance=-1), distance=-1)
+    fidelity_pqc >>= CX @ Id(1) >> CCX >> CX @ Id(1) >> Discard() @ Discard() @ H  # Swap Test
+    return fidelity_pqc
 
 def get_states(diags, description="Generating States"):
     results = []
