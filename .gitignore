@@ -4,20 +4,3 @@
 *.lt
 # Ignoring logs
 *.log
-# Ignoring legacy code
-fidelity_model/fidelity_accuracy_evaluator.py
-fidelity_model/fidelity_timing.ipynb
-gpu.py
-fidelity_model/data_old
-# Ignoring BBC side project
-*/bbc_data
-# Ignoring all gathered data from training, but not the training/validation sentences and pairs themselves
-fidelity_model/model_training/lambeq_model_training/data/*
-fidelity_model/model_training/data/*
-fidelity_model/model_training/runs/*
-fidelity_model/model_training/*/runs/*
-!fidelity_model/model_training/data/*.csv
-!fidelity_model/model_training/data/*.txt
-# Ignoring testing scripts
-testing.ipynb
-plotter.ipynb
