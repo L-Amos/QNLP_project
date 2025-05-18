@@ -1,10 +1,7 @@
-from fidelity_model import FidelityModel
-import pandas as pd
 import numpy as np
 from tqdm import tqdm
 from lambeq import BobcatParser, RemoveCupsRewriter, StronglyEntanglingAnsatz, IQPAnsatz, AtomicType, bag_of_words_reader, word_sequence_reader
 import tensornetwork as tn
-from qutip import Bloch, Qobj
 from lambeq.backend.quantum import Ket, H, CX, Controlled, X, Id, Discard
 
 ANSATZE = {
