@@ -66,15 +66,15 @@ def training(model, train_dataset, val_dataset):
         train_corr[i] = trainer.train_corr[i*EPOCHS:(i+1)*EPOCHS]
         val_corr[i] = trainer.val_corr[i*EPOCHS:(i+1)*EPOCHS]
         print("")  # Separates the training outputs
-    np.savetxt("train_costs_500-100.csv", np.mean(train_costs, axis=0), delimiter=',')
-    np.savetxt("val_costs_500-100.csv", np.mean(val_costs, axis=0), delimiter=',')
-    np.savetxt("train_corr_500-100.csv", np.mean(train_corr, axis=0), delimiter=',')
-    np.savetxt("val_corr_500-100.csv", np.mean(val_corr, axis=0), delimiter=',')
+    np.savetxt("results/train_costs_500-100.csv", np.mean(train_costs, axis=0), delimiter=',')
+    np.savetxt("results/val_costs_500-100.csv", np.mean(val_costs, axis=0), delimiter=',')
+    np.savetxt("results/train_corr_500-100.csv", np.mean(train_corr, axis=0), delimiter=',')
+    np.savetxt("results/val_corr_500-100.csv", np.mean(val_corr, axis=0), delimiter=',')
 
 def main():
     print("SETTING UP\n" + "="*len("SETTING UP"))
-    train_pairs, train_labels = ingest("train_data_500.csv", "Train Data")
-    val_pairs, val_labels = ingest("val_data_100.csv", "Val Data")
+    train_pairs, train_labels = ingest("data/train_data_500.csv", "Train Data")
+    val_pairs, val_labels = ingest("data/val_data_100.csv", "Val Data")
     train_circuits = generate_circuits(train_pairs, LANGUAGE_MODEL, "Generating Train Circuits")
     val_circuits = generate_circuits(val_pairs, LANGUAGE_MODEL, "Generating Val Circuits")
     train_dataset = create_dataset(train_circuits, train_labels, BATCH_SIZE, "Train Dataset")
