@@ -60,6 +60,8 @@ def training(model, train_dataset, val_dataset, param_vals, epochs, seed, c, lan
         model.save('my_checkpoint.lt')  # Ensures we don't have to re-jit compile for every parameter
         train_costs = np.empty((runs, epochs))
         val_costs = np.empty((runs, epochs))
+        train_corr = np.empty((runs, epochs))
+        val_corr = np.empty((runs, epochs))
         for i in range(runs):
             error = True
             while error:
@@ -76,6 +78,8 @@ def training(model, train_dataset, val_dataset, param_vals, epochs, seed, c, lan
             # Store costs
             train_costs[i] = trainer.train_epoch_costs[i*epochs:(i+1)*epochs]
             val_costs[i] = trainer.val_costs[i*epochs:(i+1)*epochs]
+            train_corr[i] = trainer.train_corr[i*epochs:(i+1)*epochs]
+            val_corr[i] = trainer.val_corr[i*epochs:(i+1)*epochs]
             print("")  # Separates the training outputs
         save_flag = input("Save? y/n\n")
         if save_flag=="y":
@@ -84,6 +88,8 @@ def training(model, train_dataset, val_dataset, param_vals, epochs, seed, c, lan
                 os.mkdir(path)
             np.savetxt(f"{path}/a-{a}_{LANGUAGE_MODELS[language_model]}_train_costs.csv", np.mean(train_costs, axis=0), delimiter=',')
             np.savetxt(f"{path}/a-{a}_{LANGUAGE_MODELS[language_model]}_val_costs.csv", np.mean(val_costs, axis=0), delimiter=',')
+            np.savetxt("train_corr_500-100.csv", np.mean(train_corr, axis=0), delimiter=',')
+            np.savetxt("val_corr_500-100.csv", np.mean(val_corr, axis=0), delimiter=',')
 
 def main():
     SEED = 2
