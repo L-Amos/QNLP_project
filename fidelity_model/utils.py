@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 from tqdm import tqdm
 from lambeq import BobcatParser, RemoveCupsRewriter, StronglyEntanglingAnsatz, IQPAnsatz, AtomicType, bag_of_words_reader, word_sequence_reader
 import tensornetwork as tn
