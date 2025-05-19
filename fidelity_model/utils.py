@@ -1,13 +1,16 @@
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
-from lambeq import BobcatParser, RemoveCupsRewriter, StronglyEntanglingAnsatz, IQPAnsatz, AtomicType, bag_of_words_reader, word_sequence_reader
+from lambeq import BobcatParser, RemoveCupsRewriter, StronglyEntanglingAnsatz, IQPAnsatz, Sim14Ansatz, Sim15Ansatz, Sim4Ansatz, AtomicType, bag_of_words_reader, word_sequence_reader
 import tensornetwork as tn
 from lambeq.backend.quantum import Ket, H, CX, Controlled, X, Id, Discard
 
 ANSATZE = {
     0: StronglyEntanglingAnsatz({AtomicType.NOUN: 1, AtomicType.SENTENCE: 1}, n_layers=1, n_single_qubit_params=3),
-    1: IQPAnsatz({AtomicType.NOUN: 1, AtomicType.SENTENCE: 1}, n_layers=1, n_single_qubit_params=3)
+    1: IQPAnsatz({AtomicType.NOUN: 1, AtomicType.SENTENCE: 1}, n_layers=1, n_single_qubit_params=3),
+    2: Sim14Ansatz({AtomicType.NOUN: 1, AtomicType.SENTENCE: 1}, n_layers=1, n_single_qubit_params=3),
+    3: Sim15Ansatz({AtomicType.NOUN: 1, AtomicType.SENTENCE: 1}, n_layers=1, n_single_qubit_params=3),
+    4: Sim4Ansatz({AtomicType.NOUN: 1, AtomicType.SENTENCE: 1}, n_layers=1, n_single_qubit_params=3)
 }
 
 
