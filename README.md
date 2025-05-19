@@ -7,6 +7,9 @@ This is the repo for the Master's project by Luke Amos of University College Lon
 ## Table of Contents
 - [Aim of Master's](#aim-of-the-masters)
 - [Lambeq And Modifications](#lambeq-and-my-modifications-to-it)
+- [Module Features](#module-features)
+- [Installing](#installing)
+
 
 ## Aim Of The Master's[](#aim-of-the-masters)
 Quantum natural language processing (QNLP) is an emergent field which uses quantum machine learning techniques for natural language tasks. It arose from the DisCoCat model fo language, which showed that sentences could be represented as operations on a collection of nouns; these computations are exactly those present in quantum computing. The DisCoCat model of language provides a highly structured approach to language, being completely based on the syntax of a sentence. 
@@ -33,3 +36,24 @@ A real-world use of such a model would be in a recommender system. Say you own a
 - A user who enjoyed a book is likely to enjoy similar books.
 
 The creation of such a recommendation system is the stretch goal of this project.
+
+## Module Features [](#module-features)
+- Custom language model based on lambeq's **Quantum NumpyModel**.
+- Custom quantum trainer heavily based on lambeq's **QuantumTrainer** (modified to log the Pearson's correlation coefficient as well as losses during training).
+- Utility functions for 
+    - Ingesting data from CSV files.
+    - Getting the sentence states themselves from the model (as the model only directly outputs fidelities between states).
+    - Generating the required PQCs from sentence strings (incl. simplifying string diagrams and adding swap tests). Includes support for multiple language models and base ansatze.
+
+## Installing [](#installing)
+The module can be installed through pip as follows:
+```sh
+pip install git+https://github.com/L-Amos/QNLP_project
+```
+The following **dependencies** will be installed at the same time if not present on your system:
+- NumPy
+- Pandas
+- Lambeq (ver 0.4.3)
+- tqdm
+- JAX
+- TensorNetwork
