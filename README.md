@@ -4,14 +4,19 @@ This is the repo for the Master's project by Luke Amos of University College Lon
 > [!IMPORTANT]
 > This is the **experiments** branch, which houses code, data and write-ups for all experiments conducted as part of this project. To see the code for the created python module, `fidelity_model`, switch to the **main** branch.
 
-## Aim Of The Master's
+## Table of Contents
+- [Aim of Master's](#aim-of-the-masters)
+- [Lambeq And Modifications](#lambeq-and-my-modifications-to-it)
+- [Branch Directory](#branch-directory)
+
+## [Aim Of The Master's](#aim-of-the-masters)
 Quantum natural language processing (QNLP) is an emergent field which uses quantum machine learning techniques for natural language tasks. It arose from the DisCoCat model fo language, which showed that sentences could be represented as operations on a collection of nouns; these computations are exactly those present in quantum computing. The DisCoCat model of language provides a highly structured approach to language, being completely based on the syntax of a sentence. 
 
 The $k$ nearest neighbours (KNN) algorithm is a ubiquitous machine learning technique used in classical natural language processing. Being entirely statistical in nature, it is completely agnostic of the particulars of the data used, only the categories between datapoints and the distances between them. A quantum version of the algorithm (the QKNN algorithm) has been proposed and used in research, even for QNLP tasks. This provides a statistical method to solving QNLP problems.
 
 While both DisCoCat and QKNN have been used for QNLP tasks in the past, they have never before been used in tandem. The aim of this project is to combine the structural method of DisCoCat and the statistical methods of QKNN to accomplish QNLP tasks, specifically binary and multi-class classification. The stretch goal is to use the hybrid system to create a quantum recommender system.
 
-## Lambeq (And My Modifications To It)
+## [Lambeq (And My Modifications To It)](#lambeq-and-my-modifications-to-it)
 Lambeq is a python package which has been created to facilitate QNLP research. Although under heavy development, it has already been used in research, and provides the backbone of the code used in this project. I have, however, had to alter it slightly.
 
 The lambeq pipeline for training a quantum language model is as follows:
@@ -30,7 +35,7 @@ A real-world use of such a model would be in a recommender system. Say you own a
 
 The creation of such a recommendation system is the stretch goal of this project.
 
-## Branch Directory
+## [Branch Directory](#branch-directory)
 - [Comparing Sizes of Training/Validation Datasets](experiments/num_train_val_pairs/)
 - [Comparing Different Ansatze](experiments/ansatze/)
 - [Devlog](/Journal/)
