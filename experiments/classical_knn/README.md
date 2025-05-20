@@ -190,7 +190,7 @@ these models will not have good binary classification performance.
 ### Binary Classification Performance[](#binary-classification-performance)
 
 | |Fidelity Model (binary labels)| Fidelity Model (similarity labels)|     Lambeq |
-|:---------------:|:-----------------:|---------------------:|---------:|
+|:---------------:|:-----------------:|:---------------------:|---------:|
 | DisCoCat | 100.00% | 100.00% | 96.55% |
 | Bag of Words | 100.00% | 100.00% | 100.00% |
 | Word Sequence | 100.00% | 96.55% | 89.66% |
