@@ -38,4 +38,5 @@ The creation of such a recommendation system is the stretch goal of this project
 ## Branch Directory[](#branch-directory)
 - [Comparing Sizes of Training/Validation Datasets](experiments/num_train_val_pairs/)
 - [Comparing Different Ansatze](experiments/ansatze/)
+- [Classical KNN Classification (Tangential)](experiments/classical_knn/)
 - [Devlog](/Journal/)
