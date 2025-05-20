@@ -37,7 +37,7 @@ A real-world use of such a model would be in a recommender system. Say you own a
 
 The creation of such a recommendation system is the stretch goal of this project.
 
-## Module Features [](#module-features)
+## Module Features[](#module-features)
 - Custom language model based on lambeq's **Quantum NumpyModel**.
 - Custom quantum trainer heavily based on lambeq's **QuantumTrainer** (modified to log the Pearson's correlation coefficient as well as losses during training).
 - Utility functions for 
@@ -45,7 +45,7 @@ The creation of such a recommendation system is the stretch goal of this project
     - Getting the sentence states themselves from the model (as the model only directly outputs fidelities between states).
     - Generating the required PQCs from sentence strings (incl. simplifying string diagrams and adding swap tests). Includes support for multiple language models and base ansatze.
 
-## Installing [](#installing)
+## Installing[](#installing)
 The module can be installed through pip as follows:
 ```sh
 pip install git+https://github.com/L-Amos/QNLP_project
