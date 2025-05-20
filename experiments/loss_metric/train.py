@@ -2,7 +2,7 @@ from lambeq import SPSAOptimizer, Dataset
 import numpy as np
 from tqdm import tqdm
 from fidelity_model.model import FidelityModel
-from fidelity_model.utils import fidelity_pqc_gen, ingest, ANSATZE
+from fidelity_model.utils import fidelity_pqc_gen, ingest
 from fidelity_model.quantum_trainer import QuantumTrainer
 
 
@@ -14,9 +14,7 @@ EPOCHS = 240
 RUNS = 5
 
 LOSS_METRICS = {
-    'L1': lambda x,y : np.sum(np.abs(x-y)),
     'MAE': lambda x,y : np.mean(np.abs(x-y)),
-    'L2': lambda x,y : np.sum((x-y)**2),
     'MSE': lambda x,y : np.mean((x-y)**2)
 }
 
